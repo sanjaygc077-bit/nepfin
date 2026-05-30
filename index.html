@@ -19,7 +19,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 header{background:linear-gradient(135deg,var(--panel2),var(--panel));border-radius:14px;padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;gap:11px;border:1px solid var(--line)}
 header h1{font-family:Georgia,serif;font-size:17px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#fff}
 .logout{margin-left:auto;font-size:12px;font-weight:600;color:var(--gold-l);background:none;border:1px solid var(--line2);padding:6px 13px;border-radius:100px;cursor:pointer}
-.nav{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:14px}
+.nav{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:14px}
 .nav-btn{padding:11px 2px;border:1px solid var(--line);border-radius:12px;background:var(--panel);cursor:pointer;font-size:12px;color:var(--muted);text-align:center;line-height:1.3;transition:.15s}
 .nav-btn.on{background:linear-gradient(135deg,var(--gold),#b8902b);color:#1a1205;border-color:var(--gold);font-weight:700}
 .nav-btn i{display:block;font-size:17px;margin-bottom:3px;font-style:normal}
@@ -139,6 +139,15 @@ tr:last-child td{border-bottom:none}
 .hero-content>*:nth-child(3){animation-delay:.25s}
 .hero-content>*:nth-child(4){animation-delay:.35s}
 .hero-content>*:nth-child(5){animation-delay:.45s}
+
+/* Starting XI pitch */
+.pitch{position:relative;width:100%;max-width:360px;aspect-ratio:68/100;margin:6px auto 0;background:repeating-linear-gradient(180deg,#0d7a3f 0 10%,#0b6c37 10% 20%);border:2px solid rgba(255,255,255,.25);border-radius:14px;overflow:hidden}
+.pitch .mk{position:absolute;border:2px solid rgba(255,255,255,.22)}
+.xi-tok{position:absolute;transform:translate(-50%,-50%);width:60px;text-align:center;z-index:2}
+.xi-shirt{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#b8902b);color:#1a1205;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto;font-size:13px;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.4)}
+.xi-shirt.empty{background:linear-gradient(135deg,#1a2c4a,#0c1830);color:var(--muted);border-color:var(--line2)}
+.xi-nm{font-size:10px;color:#fff;margin-top:3px;text-shadow:0 1px 3px rgba(0,0,0,.9);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}
+.role-badge{display:inline-flex;align-items:center;justify-content:center;width:42px;height:32px;border-radius:8px;font-size:10px;font-weight:700;background:linear-gradient(135deg,#1a2c4a,#0c1830);border:1px solid var(--line2);color:var(--gold-l);flex-shrink:0;letter-spacing:.03em}
 </style>
 </head>
 <body>
@@ -196,7 +205,13 @@ tr:last-child td{border-bottom:none}
         <div class="feature-arrow">→</div>
         <div class="feature-icon">📊</div>
         <div class="feature-name">Dashboard</div>
-        <div class="feature-desc">Club overview at a glance</div>
+        <div class="feature-desc">Upcoming tournament, events & club overview</div>
+      </div>
+      <div class="feature-card wide" onclick="enterApp('lineup')">
+        <div class="feature-arrow">→</div>
+        <div class="feature-icon">⚽</div>
+        <div class="feature-name">Starting XI</div>
+        <div class="feature-desc">Pick the formation and your starting eleven on the pitch</div>
       </div>
     </div>
   </div>
@@ -212,7 +227,8 @@ tr:last-child td{border-bottom:none}
 
   <div class="nav">
     <button class="nav-btn on" onclick="show('tournament',this)"><i>🏆</i>Cup</button>
-    <button class="nav-btn" onclick="show('dashboard',this)"><i>📊</i>Dashboard</button>
+    <button class="nav-btn" onclick="show('dashboard',this)"><i>📊</i>Dash</button>
+    <button class="nav-btn" onclick="show('lineup',this)"><i>⚽</i>XI</button>
     <button class="nav-btn" onclick="show('roster',this)"><i>👥</i>Roster</button>
     <button class="nav-btn" onclick="gatedShow('money',this)"><i>💰</i>Money</button>
   </div>
@@ -228,8 +244,39 @@ tr:last-child td{border-bottom:none}
       <div class="muted">Everything is shared live across every device signed into this account.</div>
     </div>
     <div class="card">
+      <div class="card-hd">📅 Upcoming Tournament</div>
+      <label>Tournament name</label>
+      <input id="ut-name" type="text" placeholder="NEP Cali Cup" onchange="saveTournamentInfo()">
+      <label>Date</label>
+      <input id="ut-date" type="date" onchange="saveTournamentInfo()">
+      <div class="muted" id="ut-countdown"></div>
+    </div>
+    <div class="card">
+      <div class="card-hd">🗓️ Upcoming Events</div>
+      <div class="row2">
+        <div><label>Event</label><input id="ev-name" type="text" placeholder="Team practice"></div>
+        <div><label>Date</label><input id="ev-date" type="date"></div>
+      </div>
+      <button class="btn" onclick="addEvent()">Add event</button>
+      <div id="ev-list" style="margin-top:12px"></div>
+    </div>
+    <div class="card">
       <div class="card-hd">Players by team</div>
       <div id="d-teams"></div>
+    </div>
+  </div>
+
+  <div id="lineup" class="sec">
+    <div class="card">
+      <div class="card-hd">⚽ Starting XI</div>
+      <label>Formation</label>
+      <select id="xi-formation" onchange="setFormation(this.value)"></select>
+      <div class="pitch" id="xi-pitch"></div>
+      <div class="muted">Tap a slot below to pick the player for that position.</div>
+    </div>
+    <div class="card">
+      <div class="card-hd">Pick your eleven</div>
+      <div id="xi-editor"><div class="empty">Loading…</div></div>
     </div>
   </div>
 
@@ -311,6 +358,20 @@ let supa=null,isSignup=false;
 const IDS=['A','B','C','D','E','F','G'];
 let tour=null,tMatches=[],tGoals=[],setupNum=4,setupNames={};
 let _players=[],_payments=[];
+let _settings={},_settingsBackend='local';
+const SETTINGS_LS='nepcali_club_settings_v1';
+// Each formation = 11 slots: [roleLabel, x%, y%] on the pitch (GK at bottom).
+const FORMATIONS={
+  '4-4-2':[['GK',50,90],['DEF',20,72],['DEF',40,72],['DEF',60,72],['DEF',80,72],['MID',20,50],['MID',40,50],['MID',60,50],['MID',80,50],['FWD',35,27],['FWD',65,27]],
+  '4-3-3':[['GK',50,90],['DEF',20,72],['DEF',40,72],['DEF',60,72],['DEF',80,72],['MID',28,50],['MID',50,50],['MID',72,50],['FWD',22,27],['FWD',50,23],['FWD',78,27]],
+  '3-5-2':[['GK',50,90],['DEF',30,73],['DEF',50,73],['DEF',70,73],['MID',12,52],['MID',31,52],['MID',50,52],['MID',69,52],['MID',88,52],['FWD',38,27],['FWD',62,27]],
+  '4-2-3-1':[['GK',50,90],['DEF',20,74],['DEF',40,74],['DEF',60,74],['DEF',80,74],['MID',35,58],['MID',65,58],['AM',25,40],['AM',50,40],['AM',75,40],['FWD',50,22]],
+  '5-3-2':[['GK',50,90],['DEF',12,74],['DEF',31,74],['DEF',50,74],['DEF',69,74],['DEF',88,74],['MID',30,52],['MID',50,52],['MID',70,52],['FWD',38,28],['FWD',62,28]]
+};
+const PITCH_MARKINGS='<div class="mk" style="left:0;right:0;top:50%;height:0;border-width:1px 0 0 0"></div>'+
+  '<div class="mk" style="left:50%;top:50%;width:80px;height:80px;border-radius:50%;transform:translate(-50%,-50%)"></div>'+
+  '<div class="mk" style="left:25%;right:25%;bottom:-2px;height:13%;border-bottom:none"></div>'+
+  '<div class="mk" style="left:25%;right:25%;top:-2px;height:13%;border-top:none"></div>';
 
 function initSupabase(){
   if(typeof SUPABASE_URL==='undefined'||SUPABASE_URL.includes('PASTE')||SUPABASE_URL===''){
@@ -473,6 +534,8 @@ function teamBadge(t){return `<span class="badge">${t||'?'}</span>`}
 async function loadAll(){
   await loadTournament();
   renderTournament();
+  await loadSettings();
+  renderDashboardExtras();
   updateWelcomeStats();
   loadPrivate();
 }
@@ -484,6 +547,108 @@ async function loadPrivate(){
   const payments=await loadPayments();
   _players=players;_payments=payments;
   renderRoster(players);renderMoney(players,payments);renderDashboard(players,payments);
+  renderLineup();
+}
+
+// ---- Club settings (dashboard extras + starting XI) ----
+// Tries the public club_settings table; falls back to localStorage so
+// the features work even before schema-dashboard.sql is run.
+async function loadSettings(){
+  if(supa){
+    const {data,error}=await supa.from('club_settings').select('data').eq('id',1).maybeSingle();
+    if(!error){
+      _settingsBackend='supabase';
+      if(data){_settings=data.data||{};}
+      else{_settings={};try{await supa.from('club_settings').insert({id:1,data:{}});}catch(e){}}
+      return;
+    }
+  }
+  _settingsBackend='local';
+  try{_settings=JSON.parse(localStorage.getItem(SETTINGS_LS)||'{}');}catch(e){_settings={};}
+}
+async function saveSettings(){
+  if(_settingsBackend==='supabase'&&supa){
+    const {error}=await supa.from('club_settings').update({data:_settings,updated_at:new Date().toISOString()}).eq('id',1);
+    if(error){try{localStorage.setItem(SETTINGS_LS,JSON.stringify(_settings));}catch(e){}}
+  }else{
+    try{localStorage.setItem(SETTINGS_LS,JSON.stringify(_settings));}catch(e){}
+  }
+}
+
+function fmtDate(d){if(!d)return'';try{return new Date(d+'T00:00:00').toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric',year:'numeric'});}catch(e){return d;}}
+function firstName(n){return (n||'').trim().split(/\s+/)[0]||'';}
+
+function renderDashboardExtras(){
+  const t=_settings.next_tournament||{};
+  const nEl=document.getElementById('ut-name'),dEl=document.getElementById('ut-date');
+  if(nEl)nEl.value=t.name||'';
+  if(dEl)dEl.value=t.date||'';
+  renderCountdown();
+  renderEvents();
+}
+function saveTournamentInfo(){
+  _settings.next_tournament={name:document.getElementById('ut-name').value.trim(),date:document.getElementById('ut-date').value};
+  saveSettings();renderCountdown();
+}
+function renderCountdown(){
+  const el=document.getElementById('ut-countdown');if(!el)return;
+  const t=_settings.next_tournament||{};
+  if(!t.date){el.textContent='Set a date for the next tournament.';return;}
+  const days=Math.ceil((new Date(t.date+'T00:00:00')-new Date(new Date().toDateString()))/86400000);
+  const nm=t.name||'Tournament';
+  el.textContent = days>0?`${nm} kicks off in ${days} day${days>1?'s':''} · ${fmtDate(t.date)}`
+    : days===0?`${nm} is today! ⚽`
+    : `${nm} was on ${fmtDate(t.date)}.`;
+}
+function addEvent(){
+  const name=document.getElementById('ev-name').value.trim();
+  const date=document.getElementById('ev-date').value;
+  if(!name){alert('Enter an event name');return;}
+  if(!_settings.events)_settings.events=[];
+  _settings.events.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),name,date});
+  document.getElementById('ev-name').value='';document.getElementById('ev-date').value='';
+  saveSettings();renderEvents();
+}
+function deleteEvent(id){_settings.events=(_settings.events||[]).filter(e=>e.id!==id);saveSettings();renderEvents();}
+function renderEvents(){
+  const el=document.getElementById('ev-list');if(!el)return;
+  const evs=(_settings.events||[]).slice().sort((a,b)=>(a.date||'9999').localeCompare(b.date||'9999'));
+  el.innerHTML=evs.length?evs.map(e=>`<div class="list-row"><span class="badge">📌</span>
+    <div class="player-info"><div class="player-name">${escAttr(e.name)}</div><div class="player-meta">${e.date?fmtDate(e.date):'No date set'}</div></div>
+    <button class="del" onclick="deleteEvent('${e.id}')">🗑</button></div>`).join(''):'<div class="empty">No events yet</div>';
+}
+
+// ---- Starting XI ----
+function getXI(){if(!_settings.starting_xi)_settings.starting_xi={formation:'4-3-3',picks:[]};return _settings.starting_xi;}
+function setFormation(f){const xi=getXI();xi.formation=f;saveSettings();renderLineup();}
+function setPick(i,name){const xi=getXI();if(!xi.picks)xi.picks=[];xi.picks[i]=name;saveSettings();renderLineup();}
+function renderLineup(){
+  const xi=getXI();
+  if(!FORMATIONS[xi.formation])xi.formation='4-3-3';
+  const fSel=document.getElementById('xi-formation');
+  if(fSel)fSel.innerHTML=Object.keys(FORMATIONS).map(f=>`<option value="${f}" ${f===xi.formation?'selected':''}>${f}</option>`).join('');
+  const slots=FORMATIONS[xi.formation];
+  const pitch=document.getElementById('xi-pitch');
+  if(pitch){
+    pitch.innerHTML=PITCH_MARKINGS+slots.map((s,i)=>{
+      const nm=(xi.picks&&xi.picks[i])||'';
+      const p=_players.find(pl=>pl.name===nm);
+      const num=p&&p.jersey_no?p.jersey_no:(i+1);
+      return `<div class="xi-tok" style="left:${s[1]}%;top:${s[2]}%">
+        <div class="xi-shirt ${nm?'':'empty'}">${nm?num:s[0]}</div>
+        <div class="xi-nm">${nm?escAttr(firstName(nm)):''}</div></div>`;
+    }).join('');
+  }
+  const ed=document.getElementById('xi-editor');
+  if(ed){
+    if(!_players.length){ed.innerHTML='<div class="empty">Add players in the Roster first</div>';return;}
+    const optsFor=name=>'<option value="">— pick —</option>'+_players.map(p=>`<option value="${escAttr(p.name)}" ${p.name===name?'selected':''}>${escAttr(p.name)}${p.jersey_no?' #'+p.jersey_no:''}</option>`).join('');
+    ed.innerHTML=slots.map((s,i)=>{
+      const nm=(xi.picks&&xi.picks[i])||'';
+      return `<div class="list-row"><span class="role-badge">${s[0]}</span>
+        <div class="player-info"><select class="name-inp" style="margin:0;width:100%" onchange="setPick(${i},this.value)">${optsFor(nm)}</select></div></div>`;
+    }).join('');
+  }
 }
 // Show/hide login-only edit controls based on auth state.
 function applyAuthUI(){
@@ -661,7 +826,7 @@ function enterApp(tabId){
   document.getElementById('app').style.display='block';
   window.scrollTo(0,0);
   if(tabId){
-    const map={tournament:0,dashboard:1,roster:2,money:3};
+    const map={tournament:0,dashboard:1,lineup:2,roster:3,money:4};
     const btn=document.querySelectorAll('.nav-btn')[map[tabId]];
     if(btn)btn.click();
   }
