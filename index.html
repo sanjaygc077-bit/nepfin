@@ -237,10 +237,11 @@ tr:last-child td{border-bottom:none}
     <div class="card">
       <div class="card-hd">Overview</div>
       <div class="stat-grid">
-        <div class="stat"><div class="stat-val" id="d-players">0</div><div class="stat-lbl">Players</div></div>
         <div class="stat"><div class="stat-val pos" id="d-collected">$0</div><div class="stat-lbl">Collected</div></div>
-        <div class="stat"><div class="stat-val neg" id="d-owed">$0</div><div class="stat-lbl">Outstanding</div></div>
+        <div class="stat"><div class="stat-val neg" id="d-spent">$0</div><div class="stat-lbl">Spent</div></div>
+        <div class="stat"><div class="stat-val pos" id="d-balance">$0</div><div class="stat-lbl">Balance</div></div>
       </div>
+      <div class="muted" id="d-money-summary"></div>
       <div class="muted">Everything is shared live across every device signed into this account.</div>
     </div>
     <div class="card">
@@ -695,20 +696,32 @@ function renderMoney(players,payments){
   const el=document.getElementById('money-list');
   if(!payments.length){el.innerHTML='<div class="empty">No transactions yet</div>';return;}
   el.innerHTML=payments.map(p=>{
-    const nm=p.players?p.players.name:'(deleted)';
-    return `<div class="list-row"><div class="player-info"><div class="player-name">${nm}</div><div class="player-meta">${p.note||'—'}</div></div>
-      <div style="text-align:right"><div class="pay-amt ${p.amount>=0?'pos':'neg'}">$${Math.abs(p.amount).toFixed(2)}</div>
-      <span class="pill ${p.paid?'pill-paid':'pill-due'}">${p.paid?'Paid':'Owed'}</span></div>
+    const isExpense=!p.players&&Number(p.amount)<0;
+    const nm=p.players?p.players.name:(isExpense?(p.note||'Club expense'):'(deleted)');
+    const meta=p.players?(p.note||'—'):(isExpense?'Club expense':(p.note||'—'));
+    const pill=isExpense?'<span class="pill pill-due">Expense</span>':`<span class="pill ${p.paid?'pill-paid':'pill-due'}">${p.paid?'Paid':'Owed'}</span>`;
+    return `<div class="list-row"><div class="player-info"><div class="player-name">${nm}</div><div class="player-meta">${meta}</div></div>
+      <div style="text-align:right"><div class="pay-amt ${p.amount>=0?'pos':'neg'}">${p.amount<0?'-':''}$${Math.abs(p.amount).toFixed(2)}</div>
+      ${pill}</div>
       <button class="del" onclick="deletePayment('${p.id}')">🗑</button></div>`;
   }).join('');
 }
 
 function renderDashboard(players,payments){
-  document.getElementById('d-players').textContent=players.length;
-  let collected=0,owed=0;
-  payments.forEach(p=>{if(p.paid)collected+=Number(p.amount);else owed+=Number(p.amount);});
-  document.getElementById('d-collected').textContent='$'+collected.toFixed(0);
-  document.getElementById('d-owed').textContent='$'+owed.toFixed(0);
+  let collected=0,spent=0,owed=0;
+  payments.forEach(p=>{
+    const a=Number(p.amount)||0;
+    if(!p.paid){owed+=a;return;}
+    if(a>=0)collected+=a;else spent+=Math.abs(a);
+  });
+  const balance=collected-spent;
+  document.getElementById('d-collected').textContent='$'+collected.toFixed(2);
+  document.getElementById('d-spent').textContent='-$'+spent.toFixed(2);
+  const bEl=document.getElementById('d-balance');
+  bEl.textContent='$'+balance.toFixed(2);
+  bEl.className='stat-val '+(balance>=0?'pos':'neg');
+  const sum=document.getElementById('d-money-summary');
+  if(sum)sum.textContent=`${players.length} players · Balance = Collected − Spent`+(owed?` · Outstanding $${owed.toFixed(2)}`:'');
   const byTeam={};players.forEach(p=>{const t=p.team||'?';byTeam[t]=(byTeam[t]||0)+1;});
   const teams=Object.keys(byTeam).sort();
   document.getElementById('d-teams').innerHTML=teams.length?teams.map(t=>`<div class="list-row">${teamBadge(t)}<div class="player-info"><div class="player-name">Team ${t}</div></div><div class="player-meta">${byTeam[t]} player${byTeam[t]>1?'s':''}</div></div>`).join(''):'<div class="empty">No players yet</div>';
