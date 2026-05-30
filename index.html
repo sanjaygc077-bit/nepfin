@@ -18,7 +18,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .wrap{max-width:560px;margin:0 auto;padding:14px}
 header{background:linear-gradient(135deg,var(--panel2),var(--panel));border-radius:14px;padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;gap:11px;border:1px solid var(--line)}
 header h1{font-family:Georgia,serif;font-size:17px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#fff}
-.logout{margin-left:auto;font-size:12px;font-weight:600;color:var(--gold-l);background:none;border:1px solid var(--line2);padding:6px 13px;border-radius:100px;cursor:pointer}
+.logout{font-size:12px;font-weight:600;color:var(--gold-l);background:none;border:1px solid var(--line2);padding:6px 13px;border-radius:100px;cursor:pointer}
+.home-btn{margin-left:auto;margin-right:7px;font-size:12px;font-weight:700;color:#1a1205;background:linear-gradient(135deg,var(--gold),#b8902b);border:1px solid var(--gold);padding:6px 13px;border-radius:100px;cursor:pointer}
 .nav{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:14px}
 .nav-btn{padding:11px 2px;border:1px solid var(--line);border-radius:12px;background:var(--panel);cursor:pointer;font-size:12px;color:var(--muted);text-align:center;line-height:1.3;transition:.15s}
 .nav-btn.on{background:linear-gradient(135deg,var(--gold),#b8902b);color:#1a1205;border-color:var(--gold);font-weight:700}
@@ -220,8 +221,11 @@ tr:last-child td{border-bottom:none}
 
 <div class="wrap" id="app" style="display:none">
   <header>
-    <div style="font-size:22px">⚽</div>
-    <h1>NEP Cali Manager</h1>
+    <div onclick="goHome()" style="display:flex;align-items:center;gap:11px;cursor:pointer" title="Back to home">
+      <div style="font-size:22px">⚽</div>
+      <h1>NEP Cali Manager</h1>
+    </div>
+    <button class="home-btn" onclick="goHome()" title="Back to home">⌂ Home</button>
     <button class="logout" id="auth-btn" onclick="authBtnClick()">Sign in</button>
   </header>
 
@@ -243,6 +247,15 @@ tr:last-child td{border-bottom:none}
       </div>
       <div class="muted" id="d-money-summary"></div>
       <div class="muted">Everything is shared live across every device signed into this account.</div>
+    </div>
+    <div class="card">
+      <div class="card-hd">📈 Site Usage</div>
+      <div class="stat-grid">
+        <div class="stat"><div class="stat-val" id="u-unique">–</div><div class="stat-lbl">Unique visitors</div></div>
+        <div class="stat"><div class="stat-val" id="u-total">–</div><div class="stat-lbl">Total visits</div></div>
+        <div class="stat"><div class="stat-val" id="u-you">–</div><div class="stat-lbl">Your visits</div></div>
+      </div>
+      <div class="muted">Counts unique devices by a salted hash of the IP — no raw IP addresses are stored.</div>
     </div>
     <div class="card">
       <div class="card-hd">📅 Upcoming Tournament</div>
@@ -842,6 +855,52 @@ function show(id,btn){
   document.getElementById(id).classList.add('on');btn.classList.add('on');
 }
 
+// ---- Site usage (unique visitors by salted IP hash) ----
+const VISIT_SALT='nepcali-fc::v1';
+async function sha256Hex(str){
+  if(!(window.crypto&&crypto.subtle))return null;
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));
+  return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+async function fetchIP(){
+  try{const r=await fetch('https://api.ipify.org?format=json');const j=await r.json();return j.ip||null;}
+  catch(e){return null;}
+}
+async function trackVisit(){
+  if(!supa){renderUsage();return;}
+  try{
+    if(!sessionStorage.getItem('nc_visit_logged')){
+      const ip=await fetchIP();
+      const h=ip?await sha256Hex(VISIT_SALT+'::'+ip):null;
+      if(h){
+        const {data,error}=await supa.rpc('log_visit',{p_hash:h});
+        if(!error){
+          sessionStorage.setItem('nc_visit_logged','1');
+          if(data!=null)localStorage.setItem('nc_my_visits',data);
+        }
+      }
+    }
+  }catch(e){/* ignore — usage is best-effort */}
+  renderUsage();
+}
+async function renderUsage(){
+  const uEl=document.getElementById('u-unique'),tEl=document.getElementById('u-total'),yEl=document.getElementById('u-you');
+  if(yEl)yEl.textContent=localStorage.getItem('nc_my_visits')||'–';
+  if(!supa)return;
+  try{
+    const {data,error}=await supa.rpc('visit_stats');
+    if(!error&&data&&data.length){
+      if(uEl)uEl.textContent=data[0].unique_visitors;
+      if(tEl)tEl.textContent=data[0].total_visits;
+    }
+  }catch(e){/* table/functions not set up yet — leave as – */}
+}
+
+function goHome(){
+  document.getElementById('app').style.display='none';
+  document.getElementById('welcome').style.display='flex';
+  window.scrollTo(0,0);
+}
 function enterApp(tabId){
   document.getElementById('welcome').style.display='none';
   document.getElementById('app').style.display='block';
@@ -864,6 +923,7 @@ if(initSupabase()){
   applyAuthUI();
   loadAll();
   checkSession();
+  trackVisit();
 }
 </script>
 </body>
