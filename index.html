@@ -310,6 +310,7 @@ tr:last-child td{border-bottom:none}
 let supa=null,isSignup=false;
 const IDS=['A','B','C','D','E','F','G'];
 let tour=null,tMatches=[],tGoals=[],setupNum=4,setupNames={};
+let _players=[],_payments=[];
 
 function initSupabase(){
   if(typeof SUPABASE_URL==='undefined'||SUPABASE_URL.includes('PASTE')||SUPABASE_URL===''){
@@ -372,6 +373,19 @@ async function addPlayer(){
   loadAll();
 }
 async function deletePlayer(id){if(!confirm('Remove this player?'))return;await supa.from('players').delete().eq('id',id);loadAll();}
+async function updatePlayer(id,field,val){
+  if(field==='jersey_no'){val=(''+val).trim();val=val===''?null:(parseInt(val)||null);}
+  else if(field==='team'||field==='position'){val=val===''?null:val;}
+  else if(field==='name'){val=val.trim();if(!val){alert('Name cannot be empty');loadAll();return;}}
+  const {error}=await supa.from('players').update({[field]:val}).eq('id',id);
+  if(error){alert(error.message);return;}
+  const p=_players.find(x=>x.id===id);if(p)p[field]=val;
+  if(field==='team')renderRoster(_players);
+  renderDashboard(_players,_payments);
+}
+function escAttr(s){return (s||'').replace(/"/g,'&quot;');}
+function teamOpts(sel){return '<option value="">— team —</option>'+IDS.map(id=>`<option value="${id}" ${sel===id?'selected':''}>Team ${id}</option>`).join('');}
+function posOpts(sel){return '<option value="">— pos —</option>'+['GK','DEF','MID','FWD'].map(o=>`<option value="${o}" ${sel===o?'selected':''}>${o}</option>`).join('');}
 
 async function loadPayments(){const {data,error}=await supa.from('payments').select('*, players(name, team)').order('created_at',{ascending:false});if(error){console.error(error);return[];}return data;}
 async function addPayment(){
@@ -468,6 +482,7 @@ async function loadPrivate(){
   applyAuthUI();
   const players=await loadPlayers();
   const payments=await loadPayments();
+  _players=players;_payments=payments;
   renderRoster(players);renderMoney(players,payments);renderDashboard(players,payments);
 }
 // Show/hide login-only edit controls based on auth state.
@@ -479,11 +494,26 @@ function applyAuthUI(){
 function renderRoster(players){
   document.getElementById('roster-count').textContent=players.length;
   const el=document.getElementById('roster-list');
-  el.innerHTML=players.length?players.map(p=>`
+  if(!players.length){
+    el.innerHTML='<div class="empty">No players yet</div>';
+  }else if(isLoggedIn){
+    el.innerHTML=players.map(p=>`
+    <div class="list-row" style="align-items:flex-start">${teamBadge(p.team)}
+      <div class="player-info" style="display:flex;flex-direction:column;gap:6px">
+        <input class="name-inp" style="margin:0;width:100%" value="${escAttr(p.name)}" onchange="updatePlayer('${p.id}','name',this.value)">
+        <div style="display:flex;gap:6px">
+          <select class="team-sel" style="max-width:none;width:32%;margin:0" onchange="updatePlayer('${p.id}','team',this.value)">${teamOpts(p.team)}</select>
+          <select class="team-sel" style="max-width:none;width:36%;margin:0" onchange="updatePlayer('${p.id}','position',this.value)">${posOpts(p.position)}</select>
+          <input class="name-inp" type="number" min="1" max="99" placeholder="#" style="margin:0;width:32%" value="${p.jersey_no??''}" onchange="updatePlayer('${p.id}','jersey_no',this.value)">
+        </div>
+      </div>
+      <button class="del" onclick="deletePlayer('${p.id}')" style="margin-top:6px">🗑</button></div>`).join('');
+  }else{
+    el.innerHTML=players.map(p=>`
     <div class="list-row">${teamBadge(p.team)}
       <div class="player-info"><div class="player-name">${p.name} ${p.jersey_no?'#'+p.jersey_no:''}</div>
-      <div class="player-meta">Team ${p.team||'?'} · ${p.position||'—'}</div></div>
-      ${isLoggedIn?`<button class="del" onclick="deletePlayer('${p.id}')">🗑</button>`:''}</div>`).join(''):'<div class="empty">No players yet</div>';
+      <div class="player-meta">Team ${p.team||'?'} · ${p.position||'—'}</div></div></div>`).join('');
+  }
   const sel=document.getElementById('m-player');
   sel.innerHTML='<option value="">Select player…</option>'+players.map(p=>`<option value="${p.id}">${p.name} (Team ${p.team||'?'})</option>`).join('');
 }
