@@ -1,0 +1,17 @@
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# Logs
+*.log
+
+# Local env / secrets (never commit the service_role key)
+.env
+.env.local
+service_role*.txt
+
+# Dependency dirs (not used now, but safe to ignore)
+node_modules/
