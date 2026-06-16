@@ -936,6 +936,13 @@ if(initSupabase()){
   checkSession();
   trackVisit();
 }
+
+// Deep-link support: open straight to a tab via URL hash (e.g. index.html#dash)
+(function(){
+  const map={dash:'dashboard',dashboard:'dashboard',cup:'tournament',tournament:'tournament',xi:'lineup',lineup:'lineup',roster:'roster',money:'money'};
+  const tab=map[(location.hash||'').replace('#','').toLowerCase()];
+  if(tab)enterApp(tab);
+})();
 </script>
 </body>
 </html>
