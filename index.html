@@ -543,12 +543,48 @@ async function saveScore(matchId,side,val){
   const col=side==='h'?'home_goals':'away_goals';
   await supa.from('matches').update({[col]:v}).eq('id',matchId);
   const m=tMatches.find(x=>x.id===matchId);if(m)m[col]=v;
-  renderTable();updatePlayedBadge(matchId);
+  const changed=await ensureKnockouts();
+  if(changed){renderTournament();}else{renderTable();updatePlayedBadge(matchId);}
 }
 async function addGoal(matchId){
   const m=tMatches.find(x=>x.id===matchId);
   const ins=await supa.from('goals').insert({match_id:matchId,team:m.home_team,scorer:''}).select().single();
   if(ins.data){tGoals.push(ins.data);renderMatchGoals(matchId);}
+}
+
+// Once every league match is played, create the knockout fixtures (3rd-place
+// play-off + Final) seeded from the final table, so they can be scored like
+// any other match. While unplayed, knockout teams are kept in sync with the
+// standings; once a knockout match has a score its teams are left alone.
+let _koBusy=false;
+async function ensureKnockouts(){
+  if(!tour||_koBusy)return false;
+  const league=tMatches.filter(isLeague);
+  if(!league.length||!league.every(isPlayed))return false;
+  const rows=computeStandings();
+  if(!(rows.length>=2&&rows[0].p>0))return false;
+  const want=[];
+  if(tour.num_teams>=4&&rows.length>=4)want.push({stage:'third',home:rows[2].id,away:rows[3].id});
+  want.push({stage:'final',home:rows[0].id,away:rows[1].id});
+  _koBusy=true;
+  let changed=false;
+  try{
+    let maxNo=Math.max(0,...tMatches.map(m=>m.match_no||0));
+    for(const w of want){
+      const ex=tMatches.find(m=>m.stage===w.stage);
+      if(ex){
+        if(!isPlayed(ex)&&(ex.home_team!==w.home||ex.away_team!==w.away)){
+          await supa.from('matches').update({home_team:w.home,away_team:w.away}).eq('id',ex.id);
+          ex.home_team=w.home;ex.away_team=w.away;changed=true;
+        }
+      }else{
+        maxNo++;
+        const ins=await supa.from('matches').insert({tournament_id:tour.id,match_no:maxNo,stage:w.stage,home_team:w.home,away_team:w.away}).select().single();
+        if(ins.data){tMatches.push(ins.data);changed=true;}
+      }
+    }
+  }finally{_koBusy=false;}
+  return changed;
 }
 async function setGoalField(goalId,field,val){
   const g=tGoals.find(x=>x.id===goalId);if(g){g[field]=val;}
@@ -565,6 +601,7 @@ function teamBadge(t){return `<span class="badge">${t||'?'}</span>`}
 
 async function loadAll(){
   await loadTournament();
+  await ensureKnockouts();
   renderTournament();
   loadHistory();
   await loadSettings();
@@ -772,16 +809,17 @@ function renderSetup(){
 }
 function setSetupCount(n){setupNum=n;renderSetup();}
 
-function renderMatches(){
-  const el=document.getElementById('t-match-list');
-  if(!tMatches.length){el.innerHTML='<div class="empty">No fixtures — generate in Setup</div>';return;}
-  let html='';
-  tMatches.forEach(m=>{
-    const played=isPlayed(m);
-    const hv=played?m.home_goals:'';
-    const av=played?m.away_goals:'';
-    html+=`<div class="match-card" id="mc-${m.id}">
-      <div class="match-hd"><span>Match ${m.match_no}</span>
+function isLeague(m){return !m.stage||m.stage==='league';}
+function isKnockout(m){return m.stage==='third'||m.stage==='final';}
+
+// One match card with editable score boxes + goal scorers — shared by the
+// league fixtures (Scores tab) and the knockout fixtures (Table tab).
+function matchCardHTML(m,title){
+  const played=isPlayed(m);
+  const hv=played?m.home_goals:'';
+  const av=played?m.away_goals:'';
+  return `<div class="match-card" id="mc-${m.id}">
+      <div class="match-hd"><span>${title}</span>
         <span class="pill ${played?'pill-played':'pill-not'}" id="badge-${m.id}">${played?'✓ Played':'Not played'}</span></div>
       <div class="match-row">
         <div class="tn">${teamBadge(m.home_team)} ${teamName(m.home_team)}</div>
@@ -795,9 +833,14 @@ function renderMatches(){
         <div id="goals-${m.id}"></div>
         <button class="add-scorer-btn" onclick="addGoal('${m.id}')">+ add scorer</button>
       </div></div>`;
-  });
-  el.innerHTML=html;
-  tMatches.forEach(m=>renderMatchGoals(m.id));
+}
+
+function renderMatches(){
+  const el=document.getElementById('t-match-list');
+  const league=tMatches.filter(isLeague);
+  if(!league.length){el.innerHTML='<div class="empty">No fixtures — generate in Setup</div>';return;}
+  el.innerHTML=league.map(m=>matchCardHTML(m,'Match '+m.match_no)).join('');
+  league.forEach(m=>renderMatchGoals(m.id));
 }
 
 function renderMatchGoals(matchId){
@@ -826,7 +869,7 @@ function updatePlayedBadge(matchId){
 function computeStandings(){
   const teamIds=IDS.slice(0,tour.num_teams);
   const T={};teamIds.forEach(t=>{T[t]={p:0,w:0,d:0,l:0,gf:0,ga:0,pts:0};});
-  tMatches.filter(isPlayed).forEach(m=>{
+  tMatches.filter(m=>isLeague(m)&&isPlayed(m)).forEach(m=>{
     const h=m.home_goals,a=m.away_goals,ht=T[m.home_team],at=T[m.away_team];
     if(!ht||!at)return;
     ht.p++;at.p++;ht.gf+=h;ht.ga+=a;at.gf+=a;at.ga+=h;
@@ -860,13 +903,30 @@ function renderTable(){
     <td class="${r.gd>0?'gd-pos':r.gd<0?'gd-neg':''}">${r.p?(r.gd>0?'+':'')+r.gd:dash}</td>
     <td style="font-weight:700">${r.p?r.pts:dash}</td></tr>`).join('');
   let html=`<div class="tbl-wrap"><table><thead><tr><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>GD</th><th>Pts</th></tr></thead><tbody>${tbody}</tbody></table></div>`;
+  const league=tMatches.filter(isLeague);
+  const leagueComplete=league.length>0&&league.every(isPlayed);
   if(rows.length>=2&&rows[0].p>0){
-    html+='<div class="card"><div class="card-hd">🏆 Knockout (from standings)</div>';
-    if(rows.length>=4)html+=`<div class="list-row"><div class="player-info"><div class="player-name">3rd place play-off</div><div class="player-meta">${teamName(rows[2].id)} vs ${teamName(rows[3].id)}</div></div></div>`;
-    html+=`<div class="list-row"><div class="player-info"><div class="player-name">Final</div><div class="player-meta">${teamName(rows[0].id)} vs ${teamName(rows[1].id)}</div></div></div>`;
-    html+='<div class="muted">Seeded from the table above. Play these off to decide placings.</div></div>';
+    html+='<div class="card"><div class="card-hd">🏆 Knockout</div>';
+    if(leagueComplete){
+      const third=tMatches.find(m=>m.stage==='third');
+      const fin=tMatches.find(m=>m.stage==='final');
+      if(third)html+='<div class="scorers-hd" style="margin-bottom:8px">3rd place play-off</div>'+matchCardHTML(third,'3rd place play-off');
+      if(fin)html+='<div class="scorers-hd" style="margin-bottom:8px">Final</div>'+matchCardHTML(fin,'Final');
+      if(!fin)html+='<div class="muted">Setting up knockout fixtures…</div>';
+      if(fin&&isPlayed(fin)){
+        const w=fin.home_goals>fin.away_goals?fin.home_team:(fin.away_goals>fin.home_goals?fin.away_team:null);
+        html+=w?`<div class="card-hd" style="margin-top:11px">🏆 Champion: ${teamName(w)}</div>`
+              :'<div class="muted" style="margin-top:8px">Final ended level — settle it your own way (pens/replay).</div>';
+      }
+    }else{
+      if(rows.length>=4)html+=`<div class="list-row"><div class="player-info"><div class="player-name">3rd place play-off</div><div class="player-meta">${teamName(rows[2].id)} vs ${teamName(rows[3].id)}</div></div></div>`;
+      html+=`<div class="list-row"><div class="player-info"><div class="player-name">Final</div><div class="player-meta">${teamName(rows[0].id)} vs ${teamName(rows[1].id)}</div></div></div>`;
+      html+='<div class="muted">Seeded from the table above. Finish all league matches to unlock score and scorer entry here.</div>';
+    }
+    html+='</div>';
   }
   wrap.innerHTML=html;
+  tMatches.filter(isKnockout).forEach(m=>renderMatchGoals(m.id));
   renderScorers();
 }
 
