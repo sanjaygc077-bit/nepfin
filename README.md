@@ -8,7 +8,7 @@ The entire frontend is a single `index.html` (vanilla HTML/CSS/JS, no build step
 
 | Tab | What it does | Access |
 |-----|--------------|--------|
-| Cup | League + knockout fixtures, score entry, goal scorers | Public read/write |
+| Cup | League + knockout fixtures, score entry, goal scorers, saved history of completed tournaments | Public read/write |
 | Dash | Club dashboard: upcoming tournament/events, money totals | Public read |
 | XI | Starting XI builder (formation + 11 picks) | Public read |
 | Roster | Player list with inline editing | Public read, login to edit |
@@ -33,6 +33,7 @@ nepfin/
 ├── club-banner.png         # Landing page banner
 ├── schema.sql              # Players + payments tables, base RLS
 ├── schema-tournament.sql   # Tournaments, matches, goals tables
+├── schema-history.sql      # Saved records of completed tournaments
 ├── schema-dashboard.sql    # Club settings (dashboard, events, starting XI)
 ├── schema-usage.sql        # Unique-visitor counter (functions + table)
 ├── schema-access.sql       # Access split: public cup data, login-only money
@@ -55,11 +56,12 @@ In the Supabase dashboard, open **SQL Editor > New query** and run these files *
 4. `schema-public-read.sql`
 5. `schema-dashboard.sql`
 6. `schema-usage.sql`
+7. `schema-history.sql`
 
 Then optionally seed data:
 
-7. `seed-roster.sql` (22 players)
-8. `seed-money.sql` (sample payments)
+8. `seed-roster.sql` (22 players)
+9. `seed-money.sql` (sample payments)
 
 ### 3. Configure credentials
 In **Project Settings > API**, copy your **Project URL** and **anon public** key into `config.js`:

@@ -25,7 +25,7 @@ header h1{font-family:Georgia,serif;font-size:17px;font-weight:700;letter-spacin
 .nav-btn.on{background:linear-gradient(135deg,var(--gold),#b8902b);color:#1a1205;border-color:var(--gold);font-weight:700}
 .nav-btn i{display:block;font-size:17px;margin-bottom:3px;font-style:normal}
 .sec{display:none}.sec.on{display:block}
-.subnav{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:14px}
+.subnav{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:14px}
 .subnav-btn{padding:10px 2px;border:1px solid var(--line);border-radius:10px;background:var(--panel);cursor:pointer;font-size:12px;color:var(--muted);text-align:center;transition:.15s}
 .subnav-btn.on{background:var(--crimson);color:#fff;border-color:var(--crimson);font-weight:600}
 .subsec{display:none}.subsec.on{display:block}
@@ -336,6 +336,7 @@ tr:last-child td{border-bottom:none}
       <button class="subnav-btn on" onclick="subshow('t-scores',this)">Scores</button>
       <button class="subnav-btn" onclick="subshow('t-table',this)">Table</button>
       <button class="subnav-btn" onclick="subshow('t-setup',this)">Setup</button>
+      <button class="subnav-btn" onclick="subshow('t-history',this)">History</button>
     </div>
 
     <div id="t-setup" class="subsec">
@@ -361,6 +362,12 @@ tr:last-child td{border-bottom:none}
         <div class="card-hd">Top scorers</div>
         <div id="t-scorers"><div class="empty">No goals logged yet</div></div>
       </div>
+      <button class="btn" onclick="finishTournament()">🏁 Finish &amp; save to history</button>
+      <div class="muted">Freezes the current standings and top scorers as a record. The live tournament is left as-is.</div>
+    </div>
+
+    <div id="t-history" class="subsec">
+      <div id="t-history-list"><div class="empty">Loading…</div></div>
     </div>
   </div>
 </div>
@@ -370,7 +377,7 @@ tr:last-child td{border-bottom:none}
 <script>
 let supa=null,isSignup=false;
 const IDS=['A','B','C','D','E','F','G'];
-let tour=null,tMatches=[],tGoals=[],setupNum=4,setupNames={};
+let tour=null,tMatches=[],tGoals=[],setupNum=4,setupNames={},tHistory=[];
 let _players=[],_payments=[],_editId=null;
 let _settings={},_settingsBackend='local';
 const SETTINGS_LS='nepcali_club_settings_v1';
@@ -559,6 +566,7 @@ function teamBadge(t){return `<span class="badge">${t||'?'}</span>`}
 async function loadAll(){
   await loadTournament();
   renderTournament();
+  loadHistory();
   await loadSettings();
   renderDashboardExtras();
   updateWelcomeStats();
@@ -815,19 +823,35 @@ function updatePlayedBadge(matchId){
   b.textContent=played?'✓ Played':'Not played';
 }
 
-function renderTable(){
-  const played=tMatches.filter(isPlayed);
-  const wrap=document.getElementById('t-table-wrap');
-  if(!played.length){wrap.innerHTML='<div class="empty">No matches played yet</div>';renderScorers();return;}
+function computeStandings(){
   const teamIds=IDS.slice(0,tour.num_teams);
   const T={};teamIds.forEach(t=>{T[t]={p:0,w:0,d:0,l:0,gf:0,ga:0,pts:0};});
-  played.forEach(m=>{
+  tMatches.filter(isPlayed).forEach(m=>{
     const h=m.home_goals,a=m.away_goals,ht=T[m.home_team],at=T[m.away_team];
     if(!ht||!at)return;
     ht.p++;at.p++;ht.gf+=h;ht.ga+=a;at.gf+=a;at.ga+=h;
     if(h>a){ht.w++;ht.pts+=3;at.l++;}else if(h<a){at.w++;at.pts+=3;ht.l++;}else{ht.d++;ht.pts++;at.d++;at.pts++;}
   });
-  const rows=teamIds.map(t=>({id:t,...T[t],gd:T[t].gf-T[t].ga})).sort((a,b)=>b.pts-a.pts||b.gd-a.gd||b.gf-a.gf);
+  return teamIds.map(t=>({id:t,...T[t],gd:T[t].gf-T[t].ga})).sort((a,b)=>b.pts-a.pts||b.gd-a.gd||b.gf-a.gf);
+}
+
+function computeScorers(){
+  const ids=new Set(tMatches.map(m=>m.id));
+  const tally={};
+  tGoals.forEach(g=>{
+    if(!ids.has(g.match_id))return;
+    if(!g.scorer||!g.scorer.trim())return;
+    const key=g.scorer.trim().toLowerCase()+'|'+g.team;
+    if(tally[key])tally[key].goals++;else tally[key]={name:g.scorer.trim(),team:g.team,goals:1};
+  });
+  return Object.values(tally).sort((a,b)=>b.goals-a.goals);
+}
+
+function renderTable(){
+  const played=tMatches.filter(isPlayed);
+  const wrap=document.getElementById('t-table-wrap');
+  if(!played.length){wrap.innerHTML='<div class="empty">No matches played yet</div>';renderScorers();return;}
+  const rows=computeStandings();
   const dash='<span class="dash">–</span>';
   const tbody=rows.map((r,i)=>`<tr class="${i===0&&r.p>0?'gold':''}">
     <td title="${teamName(r.id)}">${i===0&&r.p>0?'🥇 ':''}${teamBadge(r.id)} ${teamName(r.id)}</td>
@@ -847,17 +871,80 @@ function renderTable(){
 }
 
 function renderScorers(){
-  const tally={};
-  tGoals.forEach(g=>{
-    if(!g.scorer||!g.scorer.trim())return;
-    const key=g.scorer.trim().toLowerCase()+'|'+g.team;
-    if(tally[key])tally[key].goals++;else tally[key]={name:g.scorer.trim(),team:g.team,goals:1};
-  });
-  const all=Object.values(tally).sort((a,b)=>b.goals-a.goals);
+  const all=computeScorers();
   const el=document.getElementById('t-scorers');
   el.innerHTML=all.length?all.map((s,i)=>`<div class="top-row"><div class="rank">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</div>${teamBadge(s.team)}
     <div class="player-info"><div class="player-name cap">${s.name}</div><div class="player-meta">${teamName(s.team)}</div></div>
     <div class="top-goals">${s.goals}</div></div>`).join(''):'<div class="empty">No goals logged yet</div>';
+}
+
+// ---- Tournament history (saved records of completed tournaments) ----
+async function finishTournament(){
+  const playedCount=tMatches.filter(isPlayed).length;
+  if(!playedCount){alert('No matches have been played yet — nothing to save.');return;}
+  const rows=computeStandings();
+  const scorers=computeScorers();
+  const champ=rows[0]&&rows[0].p>0?teamName(rows[0].id):null;
+  const remaining=tMatches.length-playedCount;
+  const msg=remaining>0
+    ? `Save this tournament to history?\n\n${remaining} match(es) still have no score and will be recorded as unplayed.`
+    : 'Save this completed tournament to history?';
+  if(!confirm(msg))return;
+  const record={
+    name:tour.name||'NEP Cali',
+    num_teams:tour.num_teams,
+    champion:champ,
+    runner_up:rows[1]&&rows[1].p>0?teamName(rows[1].id):null,
+    standings:rows.map(r=>({team:teamName(r.id),p:r.p,w:r.w,d:r.d,l:r.l,gf:r.gf,ga:r.ga,gd:r.gd,pts:r.pts})),
+    top_scorers:scorers.map(s=>({name:s.name,team:teamName(s.team),goals:s.goals})),
+    team_names:tour.team_names||{}
+  };
+  const ins=await supa.from('tournament_history').insert(record).select().single();
+  if(ins.error){alert('Could not save to history.\n\n'+(ins.error.message||'')+'\n\nIf this mentions a missing table, run schema-history.sql in Supabase.');return;}
+  tHistory.unshift(ins.data);
+  renderHistory();
+  alert('Saved to history 🏆'+(champ?('\nChampion: '+champ):''));
+  subshow('t-history',document.querySelectorAll('#tournament .subnav-btn')[3]);
+}
+
+async function loadHistory(){
+  if(!supa){renderHistory();return;}
+  const {data,error}=await supa.from('tournament_history').select('*').order('completed_at',{ascending:false});
+  if(!error)tHistory=data||[];
+  renderHistory();
+}
+
+function renderHistory(){
+  const el=document.getElementById('t-history-list');
+  if(!el)return;
+  if(!tHistory.length){el.innerHTML='<div class="empty">No saved tournaments yet.<br>Play some matches, then use “🏁 Finish &amp; save” on the Table tab.</div>';return;}
+  el.innerHTML=tHistory.map(h=>{
+    const d=new Date(h.completed_at).toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'});
+    const standings=(h.standings||[]).map((r,i)=>`<tr class="${i===0?'gold':''}">
+      <td title="${r.team}">${i===0?'🥇 ':''}${r.team}</td>
+      <td>${r.p}</td><td>${r.w}</td><td>${r.d}</td><td>${r.l}</td>
+      <td class="${r.gd>0?'gd-pos':r.gd<0?'gd-neg':''}">${r.gd>0?'+':''}${r.gd}</td>
+      <td style="font-weight:700">${r.pts}</td></tr>`).join('');
+    const scorers=(h.top_scorers||[]).slice(0,5).map((s,i)=>`<div class="top-row">
+      <div class="rank">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</div>
+      <div class="player-info"><div class="player-name cap">${s.name}</div><div class="player-meta">${s.team}</div></div>
+      <div class="top-goals">${s.goals}</div></div>`).join('')||'<div class="empty">No goals logged</div>';
+    return `<div class="card">
+      <div class="match-hd"><span>${h.name||'NEP Cali'} • ${d}</span>
+        <button class="del" onclick="deleteHistory('${h.id}')" title="Delete record">🗑</button></div>
+      <div class="card-hd">🏆 ${h.champion?('Champion: '+h.champion):'No champion recorded'}</div>
+      <div class="tbl-wrap"><table><thead><tr><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GD</th><th>Pts</th></tr></thead><tbody>${standings}</tbody></table></div>
+      <div class="scorers-hd" style="margin-top:11px">⚽ Top scorers</div>${scorers}
+    </div>`;
+  }).join('');
+}
+
+async function deleteHistory(id){
+  if(!confirm('Delete this saved tournament record? This cannot be undone.'))return;
+  const {error}=await supa.from('tournament_history').delete().eq('id',id);
+  if(error){alert('Could not delete: '+error.message);return;}
+  tHistory=tHistory.filter(h=>h.id!==id);
+  renderHistory();
 }
 
 function show(id,btn){
