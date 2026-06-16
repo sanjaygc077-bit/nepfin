@@ -476,13 +476,24 @@ async function addPayment(){
 async function deletePayment(id){await supa.from('payments').delete().eq('id',id);loadAll();}
 
 async function loadTournament(){
-  let {data}=await supa.from('tournaments').select('*').order('created_at',{ascending:false}).limit(1);
+  let {data}=await supa.from('tournaments').select('*').order('created_at',{ascending:false});
   if(!data||!data.length){
     const ins=await supa.from('tournaments').insert({name:'NEP Cali',num_teams:4,team_names:{}}).select().single();
-    tour=ins.data;
-  }else{tour=data[0];}
-  const m=await supa.from('matches').select('*').eq('tournament_id',tour.id).order('match_no');
+    tour=ins.data;data=[tour];
+  }
+  // Pick the newest tournament, but if it has no fixtures fall back to one that
+  // does. Duplicate/empty tournament rows can exist (e.g. a race on first load),
+  // and loading the empty one leaves the Scores tab with no match/scorer controls.
+  tour=data[0];
+  let m=await supa.from('matches').select('*').eq('tournament_id',tour.id).order('match_no');
   tMatches=m.data||[];
+  if(!tMatches.length){
+    for(const t of data){
+      if(t.id===tour.id)continue;
+      const r=await supa.from('matches').select('*').eq('tournament_id',t.id).order('match_no');
+      if(r.data&&r.data.length){tour=t;tMatches=r.data;break;}
+    }
+  }
   if(!tMatches.length){await buildFixtures(tour.num_teams);}
   const g=await supa.from('goals').select('*');
   tGoals=g.data||[];
