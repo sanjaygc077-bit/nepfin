@@ -232,7 +232,7 @@ tr:last-child td{border-bottom:none}
     <img class="hero-banner" src="club-banner.png" alt="Nepcali Football Club — Pride, Roots, Heritage">
     <button class="hero-cta" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">Explore the club →</button>
     <div class="socials" id="welcome-socials" style="display:none"></div>
-    <div class="social-edit-wrap">
+    <div class="social-edit-wrap" id="social-edit-wrap" style="display:none">
       <button class="social-edit-toggle" onclick="toggleSocialEdit()">🔗 Add / edit social links</button>
       <div class="social-edit-box" id="welcome-social-edit" style="display:none">
         <div id="welcome-social-inputs"></div>
@@ -887,8 +887,12 @@ function renderLineup(){
 function applyAuthUI(){
   const addCard=document.getElementById('roster-add-card');
   if(addCard)addCard.style.display='block';
+  // Social links: everyone sees the icons, but only the Money admin can edit.
+  const canAdmin=canEditMoney();
   const socialCard=document.getElementById('social-card');
-  if(socialCard)socialCard.style.display='block';
+  if(socialCard)socialCard.style.display=canAdmin?'block':'none';
+  const socialEdit=document.getElementById('social-edit-wrap');
+  if(socialEdit)socialEdit.style.display=canAdmin?'block':'none';
 }
 
 function renderRoster(players){
