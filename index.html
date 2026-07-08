@@ -740,6 +740,13 @@ function applyAuthUI(){
 
 function renderRoster(players){
   document.getElementById('roster-count').textContent=players.length;
+  // Order the roster by jersey number (players with no number go last).
+  players=players.slice().sort((a,b)=>{
+    const ja=a.jersey_no==null?Infinity:a.jersey_no;
+    const jb=b.jersey_no==null?Infinity:b.jersey_no;
+    if(ja!==jb)return ja-jb;
+    return (a.name||'').localeCompare(b.name||'');
+  });
   const el=document.getElementById('roster-list');
   if(!players.length){
     el.innerHTML='<div class="empty">No players yet</div>';
@@ -758,12 +765,12 @@ function renderRoster(players){
           </div>
           <button class="del" onclick="doneEdit()" style="margin-top:6px;color:var(--green)">✓</button></div>`;
       }
-      // Simple list row: "1. Krisham (1)"
+      // Simple list row: "10. Krisham" — leading number is the jersey number.
       const meta=(p.team||p.position)?`<div class="player-meta">${p.team?'Team '+p.team:''}${p.team&&p.position?' · ':''}${p.position||''}</div>`:'';
-      const num=p.jersey_no!=null?` (${p.jersey_no})`:'';
+      const lead=p.jersey_no!=null?`${p.jersey_no}. `:'';
       const edit=`<button class="del" style="color:var(--gold-l)" onclick="editPlayer('${p.id}')">✏️</button><button class="del" onclick="deletePlayer('${p.id}')">🗑</button>`;
       return `<div class="list-row">
-        <div class="player-info"><div class="player-name">${i+1}. ${p.name}${num}</div>${meta}</div>
+        <div class="player-info"><div class="player-name">${lead}${p.name}</div>${meta}</div>
         ${edit}</div>`;
     }).join('');
   }
