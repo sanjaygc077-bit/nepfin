@@ -159,7 +159,7 @@ tr:last-child td{border-bottom:none}
       <h1 style="font-size:19px;font-weight:600">🔒 Sign in to edit</h1>
       <button onclick="closeLogin()" style="margin-left:auto;background:none;border:none;font-size:20px;color:#999;cursor:pointer">×</button>
     </div>
-    <p style="font-size:13px;color:#888;margin-bottom:18px">Only the Money tab needs a login. Scores, roster & dashboard are open. Sign in to add/remove players too.</p>
+    <p style="font-size:13px;color:#888;margin-bottom:18px">Only the Money tab needs a login. Scores, roster & dashboard are open — anyone can edit the roster too.</p>
     <div id="config-banner" class="banner" style="display:none"></div>
     <label>Email</label>
     <input id="email" type="email" placeholder="you@example.com">
@@ -732,10 +732,10 @@ function renderLineup(){
     }).join('');
   }
 }
-// Show/hide login-only edit controls based on auth state.
+// Roster editing is open to everyone, so the add form is always shown.
 function applyAuthUI(){
   const addCard=document.getElementById('roster-add-card');
-  if(addCard)addCard.style.display=isLoggedIn?'block':'none';
+  if(addCard)addCard.style.display='block';
 }
 
 function renderRoster(players){
@@ -745,8 +745,8 @@ function renderRoster(players){
     el.innerHTML='<div class="empty">No players yet</div>';
   }else{
     el.innerHTML=players.map((p,i)=>{
-      // Inline editor — only for the row the user chose to edit (logged in).
-      if(isLoggedIn&&_editId===p.id){
+      // Inline editor — for the row the user chose to edit (open to everyone).
+      if(_editId===p.id){
         return `<div class="list-row" style="align-items:flex-start">${teamBadge(p.team)}
           <div class="player-info" style="display:flex;flex-direction:column;gap:6px">
             <input class="name-inp" style="margin:0;width:100%" value="${escAttr(p.name)}" onchange="updatePlayer('${p.id}','name',this.value)">
@@ -761,7 +761,7 @@ function renderRoster(players){
       // Simple list row: "1. Krisham (1)"
       const meta=(p.team||p.position)?`<div class="player-meta">${p.team?'Team '+p.team:''}${p.team&&p.position?' · ':''}${p.position||''}</div>`:'';
       const num=p.jersey_no!=null?` (${p.jersey_no})`:'';
-      const edit=isLoggedIn?`<button class="del" style="color:var(--gold-l)" onclick="editPlayer('${p.id}')">✏️</button><button class="del" onclick="deletePlayer('${p.id}')">🗑</button>`:'';
+      const edit=`<button class="del" style="color:var(--gold-l)" onclick="editPlayer('${p.id}')">✏️</button><button class="del" onclick="deletePlayer('${p.id}')">🗑</button>`;
       return `<div class="list-row">
         <div class="player-info"><div class="player-name">${i+1}. ${p.name}${num}</div>${meta}</div>
         ${edit}</div>`;
