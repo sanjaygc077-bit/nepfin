@@ -381,14 +381,25 @@ let tour=null,tMatches=[],tGoals=[],setupNum=4,setupNames={},tHistory=[];
 let _players=[],_payments=[],_editId=null;
 let _settings={},_settingsBackend='local';
 const SETTINGS_LS='nepcali_club_settings_v1';
-// Each formation = 11 slots: [roleLabel, x%, y%] on the pitch (GK at bottom).
+// Each formation = a list of slots: [roleLabel, x%, y%] on the pitch (GK at bottom).
+// 11-a-side formations have 11 slots; 8-a-side formations have 8 slots.
 const FORMATIONS={
   '4-4-2':[['GK',50,90],['DEF',20,72],['DEF',40,72],['DEF',60,72],['DEF',80,72],['MID',20,50],['MID',40,50],['MID',60,50],['MID',80,50],['FWD',35,27],['FWD',65,27]],
   '4-3-3':[['GK',50,90],['DEF',20,72],['DEF',40,72],['DEF',60,72],['DEF',80,72],['MID',28,50],['MID',50,50],['MID',72,50],['FWD',22,27],['FWD',50,23],['FWD',78,27]],
   '3-5-2':[['GK',50,90],['DEF',30,73],['DEF',50,73],['DEF',70,73],['MID',12,52],['MID',31,52],['MID',50,52],['MID',69,52],['MID',88,52],['FWD',38,27],['FWD',62,27]],
   '4-2-3-1':[['GK',50,90],['DEF',20,74],['DEF',40,74],['DEF',60,74],['DEF',80,74],['MID',35,58],['MID',65,58],['AM',25,40],['AM',50,40],['AM',75,40],['FWD',50,22]],
-  '5-3-2':[['GK',50,90],['DEF',12,74],['DEF',31,74],['DEF',50,74],['DEF',69,74],['DEF',88,74],['MID',30,52],['MID',50,52],['MID',70,52],['FWD',38,28],['FWD',62,28]]
+  '5-3-2':[['GK',50,90],['DEF',12,74],['DEF',31,74],['DEF',50,74],['DEF',69,74],['DEF',88,74],['MID',30,52],['MID',50,52],['MID',70,52],['FWD',38,28],['FWD',62,28]],
+  // ---- 8-a-side (8v8): 1 GK + 7 outfield ----
+  '3-3-1':[['GK',50,90],['DEF',25,72],['DEF',50,72],['DEF',75,72],['MID',25,50],['MID',50,50],['MID',75,50],['FWD',50,27]],
+  '2-3-2':[['GK',50,90],['DEF',33,73],['DEF',67,73],['MID',25,50],['MID',50,50],['MID',75,50],['FWD',35,27],['FWD',65,27]],
+  '3-2-2':[['GK',50,90],['DEF',25,73],['DEF',50,73],['DEF',75,73],['MID',35,50],['MID',65,50],['FWD',35,27],['FWD',65,27]],
+  '2-4-1':[['GK',50,90],['DEF',33,73],['DEF',67,73],['MID',15,50],['MID',38,50],['MID',62,50],['MID',85,50],['FWD',50,27]]
 };
+// Which formations belong to each team size (drives the grouped dropdown).
+const FORMATION_GROUPS=[
+  {label:'11-a-side',keys:['4-4-2','4-3-3','3-5-2','4-2-3-1','5-3-2']},
+  {label:'8-a-side',keys:['3-3-1','2-3-2','3-2-2','2-4-1']}
+];
 const PITCH_MARKINGS='<div class="mk" style="left:0;right:0;top:50%;height:0;border-width:1px 0 0 0"></div>'+
   '<div class="mk" style="left:50%;top:50%;width:80px;height:80px;border-radius:50%;transform:translate(-50%,-50%)"></div>'+
   '<div class="mk" style="left:25%;right:25%;bottom:-2px;height:13%;border-bottom:none"></div>'+
@@ -708,7 +719,10 @@ function renderLineup(){
   const xi=getXI();
   if(!FORMATIONS[xi.formation])xi.formation='4-3-3';
   const fSel=document.getElementById('xi-formation');
-  if(fSel)fSel.innerHTML=Object.keys(FORMATIONS).map(f=>`<option value="${f}" ${f===xi.formation?'selected':''}>${f}</option>`).join('');
+  if(fSel)fSel.innerHTML=FORMATION_GROUPS.map(g=>
+    `<optgroup label="${g.label}">`+g.keys.filter(f=>FORMATIONS[f]).map(f=>
+      `<option value="${f}" ${f===xi.formation?'selected':''}>${f}</option>`).join('')+`</optgroup>`
+  ).join('');
   const slots=FORMATIONS[xi.formation];
   const pitch=document.getElementById('xi-pitch');
   if(pitch){
