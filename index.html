@@ -181,7 +181,7 @@ tr:last-child td{border-bottom:none}
 .md-foot{position:relative;z-index:1;margin-top:14px;text-align:center;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted2)}
 .md-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
 /* ---- Social links ---- */
-.socials{display:flex;justify-content:center;align-items:center;gap:14px;flex-wrap:wrap;padding:22px 24px 6px;background:#060d1c}
+.socials{display:flex;justify-content:center;align-items:center;gap:14px;flex-wrap:wrap;padding:18px 24px 4px;background:transparent}
 .socials-hd{width:100%;text-align:center;color:#5a6b85;font-size:11px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px}
 .social-btn{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;transition:transform .15s,filter .15s;box-shadow:0 4px 12px rgba(0,0,0,.4);text-decoration:none}
 .social-btn:active{transform:scale(.92)}
@@ -193,7 +193,7 @@ tr:last-child td{border-bottom:none}
 .social-btn.youtube{background:#ff0000}
 .social-btn.x{background:#000}
 .social-btn.whatsapp{background:#25d366}
-.social-edit-wrap{background:#060d1c;text-align:center;padding:0 24px 12px}
+.social-edit-wrap{background:transparent;text-align:center;padding:10px 24px 4px}
 .social-edit-toggle{font-size:12px;font-weight:600;color:#9fb0c9;background:none;border:1px solid rgba(212,175,55,.28);padding:8px 18px;border-radius:100px;cursor:pointer;letter-spacing:.03em}
 .social-edit-toggle:hover{border-color:rgba(212,175,55,.6);color:#e8c766}
 .social-edit-box{background:#0b1428;max-width:520px;margin:12px auto 0;border:1px solid rgba(212,175,55,.18);border-radius:14px;padding:14px 16px 16px;text-align:left}
@@ -231,6 +231,14 @@ tr:last-child td{border-bottom:none}
   <div class="hero">
     <img class="hero-banner" src="club-banner.png" alt="Nepcali Football Club — Pride, Roots, Heritage">
     <button class="hero-cta" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">Explore the club →</button>
+    <div class="socials" id="welcome-socials" style="display:none"></div>
+    <div class="social-edit-wrap">
+      <button class="social-edit-toggle" onclick="toggleSocialEdit()">🔗 Add / edit social links</button>
+      <div class="social-edit-box" id="welcome-social-edit" style="display:none">
+        <div id="welcome-social-inputs"></div>
+        <div class="social-edit-note">Links show as logo buttons above. Paste a full URL, or leave blank to hide one.</div>
+      </div>
+    </div>
   </div>
   <div class="features" id="features">
     <div class="features-hd">Explore Nepcali FC</div>
@@ -272,14 +280,6 @@ tr:last-child td{border-bottom:none}
         <div class="feature-name">Starting XI</div>
         <div class="feature-desc">Pick the formation and your starting eleven on the pitch</div>
       </div>
-    </div>
-  </div>
-  <div class="socials" id="welcome-socials" style="display:none"></div>
-  <div class="social-edit-wrap">
-    <button class="social-edit-toggle" onclick="toggleSocialEdit()">🔗 Add / edit social links</button>
-    <div class="social-edit-box" id="welcome-social-edit" style="display:none">
-      <div id="welcome-social-inputs"></div>
-      <div class="social-edit-note">Links show as logo buttons above. Paste a full URL, or leave blank to hide one.</div>
     </div>
   </div>
   <div class="welcome-foot">Play hard · Have fun · Respect all</div>
