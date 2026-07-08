@@ -149,6 +149,37 @@ tr:last-child td{border-bottom:none}
 .xi-shirt.empty{background:linear-gradient(135deg,#1a2c4a,#0c1830);color:var(--muted);border-color:var(--line2)}
 .xi-nm{font-size:10px;color:#fff;margin-top:3px;text-shadow:0 1px 3px rgba(0,0,0,.9);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}
 .role-badge{display:inline-flex;align-items:center;justify-content:center;width:42px;height:32px;border-radius:8px;font-size:10px;font-weight:700;background:linear-gradient(135deg,#1a2c4a,#0c1830);border:1px solid var(--line2);color:var(--gold-l);flex-shrink:0;letter-spacing:.03em}
+/* ---- Matchday live graphics ---- */
+.md-controls{display:flex;flex-direction:column;gap:8px}
+.md-controls select{margin:0}
+.md-row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.md-card{position:relative;border-radius:18px;overflow:hidden;background:linear-gradient(160deg,#0c1a36 0%,#0a1428 55%,#0b1122 100%);border:1px solid var(--line2);padding:20px 18px 18px;margin-top:12px}
+.md-card::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% -20%,rgba(212,175,55,.16),transparent 60%);pointer-events:none}
+.md-top{display:flex;align-items:center;justify-content:space-between;gap:8px;position:relative;z-index:1}
+.md-comp{font-family:Georgia,serif;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-l);font-weight:700}
+.md-status{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:4px 10px;border-radius:100px}
+.md-status.live{background:var(--crimson);color:#fff;box-shadow:0 0 0 0 rgba(192,57,43,.6);animation:mdpulse 1.6s infinite}
+.md-status.ft{background:#1a2c4a;color:var(--muted);border:1px solid var(--line2)}
+.md-status.up{background:#123;color:var(--gold-l);border:1px solid var(--line2)}
+@keyframes mdpulse{0%{box-shadow:0 0 0 0 rgba(192,57,43,.55)}70%{box-shadow:0 0 0 10px rgba(192,57,43,0)}100%{box-shadow:0 0 0 0 rgba(192,57,43,0)}}
+.md-stage{position:relative;z-index:1;text-align:center;font-size:11px;color:var(--muted2);letter-spacing:.1em;text-transform:uppercase;margin:2px 0 14px}
+.md-score{position:relative;z-index:1;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px}
+.md-team{display:flex;flex-direction:column;align-items:center;gap:8px;min-width:0}
+.md-badge{width:58px;height:58px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:Georgia,serif;font-size:26px;font-weight:700;color:#1a1205;background:linear-gradient(135deg,var(--gold),#b8902b);border:2px solid #fff;box-shadow:0 4px 12px rgba(0,0,0,.45)}
+.md-team.away .md-badge{background:linear-gradient(135deg,var(--crimson-l),var(--crimson));color:#fff}
+.md-tn{font-size:13px;font-weight:700;color:#fff;text-align:center;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.md-nums{font-family:Georgia,serif;font-weight:700;font-size:44px;color:#fff;letter-spacing:2px;white-space:nowrap}
+.md-nums .dash{color:var(--gold);padding:0 6px;font-size:30px;vertical-align:middle}
+.md-events{position:relative;z-index:1;margin-top:16px;border-top:1px dashed var(--line);padding-top:12px}
+.md-ev-hd{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-l);font-weight:700;margin-bottom:8px;text-align:center}
+.md-ev{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--txt);padding:3px 0}
+.md-ev.away{flex-direction:row-reverse;text-align:right}
+.md-ev .md-ev-nm{flex:1;font-weight:600}
+.md-ev.away .md-ev-nm{text-align:right}
+.md-ev .md-ev-ball{font-size:13px}
+.md-empty-ev{text-align:center;color:var(--muted2);font-size:12px;padding:6px 0}
+.md-foot{position:relative;z-index:1;margin-top:14px;text-align:center;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted2)}
+.md-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
 </style>
 </head>
 <body>
@@ -184,6 +215,12 @@ tr:last-child td{border-bottom:none}
     <div class="features-hd">Explore Nepcali FC</div>
     <div class="features-sub">Everything the club does, in one place</div>
     <div class="feature-grid">
+      <div class="feature-card wide" onclick="enterMatchday()" style="border-color:rgba(224,73,47,.55);background:linear-gradient(135deg,#1a1830,#241226)">
+        <div class="feature-arrow">→</div>
+        <div class="feature-icon">📢</div>
+        <div class="feature-name">Matchday Live <span style="font-size:11px;background:var(--crimson);color:#fff;padding:2px 8px;border-radius:100px;vertical-align:middle;margin-left:6px;letter-spacing:.05em">LIVE</span></div>
+        <div class="feature-desc">Live scoreboard with goal events — download & share the graphic to social media</div>
+      </div>
       <div class="feature-card wide" onclick="enterApp('tournament')">
         <div class="feature-arrow">→</div>
         <div class="feature-icon">🏆</div>
@@ -229,12 +266,51 @@ tr:last-child td{border-bottom:none}
     <button class="logout" id="auth-btn" onclick="authBtnClick()">Sign in</button>
   </header>
 
-  <div class="nav">
+  <div class="nav" style="grid-template-columns:repeat(6,1fr)">
     <button class="nav-btn on" onclick="show('tournament',this)"><i>🏆</i>Cup</button>
+    <button class="nav-btn" onclick="show('matchday',this)"><i>📢</i>Live</button>
     <button class="nav-btn" onclick="show('dashboard',this)"><i>📊</i>Dash</button>
     <button class="nav-btn" onclick="show('lineup',this)"><i>⚽</i>XI</button>
     <button class="nav-btn" onclick="show('roster',this)"><i>👥</i>Roster</button>
     <button class="nav-btn" onclick="gatedShow('money',this)"><i>💰</i>Money</button>
+  </div>
+
+  <div id="matchday" class="sec">
+    <div class="card">
+      <div class="card-hd">📢 Matchday graphic — custom / external match</div>
+      <div class="muted" style="margin-bottom:10px">Type any teams (e.g. a friendly vs another club), set the score & status, add goal/card/comment events, then download or share the graphic.</div>
+      <label>Title / competition</label>
+      <input id="cm-comp" type="text" placeholder="Nepcali FC" oninput="cmSet('comp',this.value)">
+      <label>Subtitle (stage, venue, date…)</label>
+      <input id="cm-stage" type="text" placeholder="Friendly · City Ground" oninput="cmSet('stage',this.value)">
+      <div class="row2">
+        <div><label>Home team</label><input id="cm-home" type="text" placeholder="Nepcali FC" oninput="cmSet('home',this.value)"></div>
+        <div><label>Away team</label><input id="cm-away" type="text" placeholder="Rivals FC" oninput="cmSet('away',this.value)"></div>
+      </div>
+      <div class="row2">
+        <div><label>Home score</label><input id="cm-hs" type="number" min="0" max="99" placeholder="0" oninput="cmSet('hs',this.value)"></div>
+        <div><label>Away score</label><input id="cm-as" type="number" min="0" max="99" placeholder="0" oninput="cmSet('as',this.value)"></div>
+      </div>
+      <label>Status</label>
+      <select id="cm-status" onchange="cmSet('status',this.value)">
+        <option value="up">Upcoming</option>
+        <option value="live">🔴 Live</option>
+        <option value="ft">Full-time</option>
+      </select>
+    </div>
+    <div class="card">
+      <div class="card-hd">📋 Events & comments</div>
+      <div id="cm-events"><div class="empty">No events yet.</div></div>
+      <div class="md-row2" style="margin-top:10px">
+        <button class="add-scorer-btn" onclick="cmAddEvent()">+ add event</button>
+        <button class="add-scorer-btn" onclick="cmAddComment()">💬 add comment</button>
+      </div>
+    </div>
+    <div id="cm-preview"></div>
+    <div class="md-actions">
+      <button class="btn" onclick="downloadCustom()">⬇︎ Download image</button>
+      <button class="btn" onclick="shareCustom()">📤 Share</button>
+    </div>
   </div>
 
   <div id="dashboard" class="sec">
@@ -332,9 +408,10 @@ tr:last-child td{border-bottom:none}
   </div>
 
   <div id="tournament" class="sec on">
-    <div class="subnav">
+    <div class="subnav" style="grid-template-columns:repeat(5,1fr)">
       <button class="subnav-btn on" onclick="subshow('t-scores',this)">Scores</button>
       <button class="subnav-btn" onclick="subshow('t-table',this)">Table</button>
+      <button class="subnav-btn" onclick="subshow('t-live',this)">📢 Live</button>
       <button class="subnav-btn" onclick="subshow('t-setup',this)">Setup</button>
       <button class="subnav-btn" onclick="subshow('t-history',this)">History</button>
     </div>
@@ -354,6 +431,30 @@ tr:last-child td{border-bottom:none}
 
     <div id="t-scores" class="subsec on">
       <div id="t-match-list"><div class="empty">Loading…</div></div>
+    </div>
+
+    <div id="t-live" class="subsec">
+      <div class="card">
+        <div class="card-hd">📢 Matchday graphic</div>
+        <div class="md-controls">
+          <div><label>Match</label><select id="md-match" onchange="mdSelectMatch(this.value)"></select></div>
+          <div class="md-row2">
+            <div><label>Status</label><select id="md-status" onchange="mdSetStatus(this.value)">
+              <option value="up">Upcoming</option>
+              <option value="live">🔴 Live</option>
+              <option value="ft">Full-time</option>
+            </select></div>
+            <div><label>&nbsp;</label><button class="btn" style="margin:0" onclick="mdRefresh()">🔄 Refresh</button></div>
+          </div>
+        </div>
+        <div class="muted" style="margin-top:8px">Set the status and it updates live for everyone. Enter goals in the Scores tab — they appear here as events.</div>
+      </div>
+      <div id="md-preview"></div>
+      <div class="md-actions">
+        <button class="btn" onclick="downloadMatchday()">⬇︎ Download image</button>
+        <button class="btn" onclick="shareMatchday()">📤 Share</button>
+      </div>
+      <canvas id="md-canvas" width="1080" height="1350" style="display:none"></canvas>
     </div>
 
     <div id="t-table" class="subsec">
@@ -831,7 +932,7 @@ function renderDashboard(players,payments){
 
 function isPlayed(m){return m.home_goals!==null&&m.away_goals!==null&&m.home_goals!==undefined&&m.away_goals!==undefined;}
 
-function renderTournament(){renderSetup();renderMatches();renderTable();}
+function renderTournament(){renderSetup();renderMatches();renderTable();renderMatchday();}
 
 function renderSetup(){
   const cg=document.getElementById('t-count-grid');
@@ -971,6 +1072,317 @@ function renderScorers(){
     <div class="top-goals">${s.goals}</div></div>`).join(''):'<div class="empty">No goals logged yet</div>';
 }
 
+// ---- Matchday live graphics (shareable broadcast card) ----
+let mdMatchId=null,mdPollTimer=null;
+
+function mdStatusOf(m){
+  const map=_settings.match_status||{};
+  if(map[m.id])return map[m.id];
+  return isPlayed(m)?'ft':'up';
+}
+function mdSetStatus(v){
+  if(!mdMatchId)return;
+  if(!_settings.match_status)_settings.match_status={};
+  _settings.match_status[mdMatchId]=v;
+  saveSettings();
+  mdRenderPreview();
+}
+function mdScore(m){
+  if(isPlayed(m))return [m.home_goals,m.away_goals];
+  const gs=tGoals.filter(g=>g.match_id===m.id);
+  return [gs.filter(g=>g.team===m.home_team).length, gs.filter(g=>g.team===m.away_team).length];
+}
+function mdGoalsFor(m){
+  return tGoals.filter(g=>g.match_id===m.id).slice()
+    .sort((a,b)=>new Date(a.created_at||0)-new Date(b.created_at||0));
+}
+function mdStageLabel(m){
+  return m.stage==='final'?'Final':m.stage==='third'?'3rd place play-off':('League · Match '+m.match_no);
+}
+function mdMatchLabel(m){
+  const stage=m.stage==='final'?'Final':m.stage==='third'?'3rd place':('Match '+m.match_no);
+  const [h,a]=mdScore(m);
+  const sc=(isPlayed(m)||mdStatusOf(m)==='live')?` (${h}-${a})`:'';
+  return `${stage}: ${teamName(m.home_team)} v ${teamName(m.away_team)}${sc}`;
+}
+
+function renderMatchday(){
+  const sel=document.getElementById('md-match');
+  const wrap=document.getElementById('md-preview');
+  if(!sel||!wrap)return;
+  const list=tMatches.slice().sort((a,b)=>(a.match_no||99)-(b.match_no||99));
+  if(!list.length){
+    sel.innerHTML='<option value="">No fixtures yet</option>';
+    wrap.innerHTML='<div class="empty">Generate fixtures in Setup first</div>';
+    return;
+  }
+  if(!mdMatchId||!list.find(m=>m.id===mdMatchId)){
+    const live=list.find(m=>mdStatusOf(m)==='live');
+    const upcoming=list.find(m=>!isPlayed(m));
+    mdMatchId=(live||upcoming||list[0]).id;
+  }
+  sel.innerHTML=list.map(m=>`<option value="${m.id}" ${m.id===mdMatchId?'selected':''}>${escAttr(mdMatchLabel(m))}</option>`).join('');
+  const stSel=document.getElementById('md-status');
+  const cur=list.find(m=>m.id===mdMatchId);
+  if(stSel&&cur)stSel.value=mdStatusOf(cur);
+  mdRenderPreview();
+}
+function mdSelectMatch(id){mdMatchId=id;renderMatchday();}
+
+// ---- Shared, data-driven graphic (used by tournament + custom matchday) ----
+// A normalized card = {comp,stage,home,away,homeBadge,awayBadge,hs,as,status,events,evHead}
+// events = [{side:'home'|'away'|'none', type:'goal'|'yellow'|'red'|'sub'|'note', text}]
+function mdEventIcon(t){return ({goal:'⚽',yellow:'🟨',red:'🟥',sub:'🔁',note:'💬'})[t]||'⚽';}
+function mdInitial(n){const s=(n||'').trim();return s?s[0].toUpperCase():'?';}
+
+function mdNormFromTournament(m){
+  const st=mdStatusOf(m);const sc=mdScore(m);
+  const events=mdGoalsFor(m).map(g=>({side:g.team===m.away_team?'away':'home',type:'goal',text:(g.scorer&&g.scorer.trim())?g.scorer.trim():'Goal'}));
+  return {comp:(tour&&tour.name)?tour.name:'NEP Cali',stage:mdStageLabel(m),home:teamName(m.home_team),away:teamName(m.away_team),
+    homeBadge:(m.home_team||'?'),awayBadge:(m.away_team||'?'),hs:sc[0],as:sc[1],status:st,events:events,evHead:'⚽ Goals'};
+}
+function mdNormCustom(){
+  const c=_settings.custom_match||{};
+  const hs=(c.hs===''||c.hs==null)?0:(Number(c.hs)||0);
+  const as=(c.as===''||c.as==null)?0:(Number(c.as)||0);
+  return {comp:c.comp||'Nepcali FC',stage:c.stage||'',home:c.home||'Home',away:c.away||'Away',
+    homeBadge:mdInitial(c.home||'H'),awayBadge:mdInitial(c.away||'A'),hs:hs,as:as,status:c.status||'up',
+    events:(c.events||[]).map(e=>({side:e.side||'none',type:e.type||'note',text:e.text||''})),evHead:'📋 Events'};
+}
+
+function mdPreviewHTML(d){
+  const stCls=d.status==='live'?'live':d.status==='ft'?'ft':'up';
+  const stTxt=d.status==='live'?'● Live':d.status==='ft'?'Full-time':'Upcoming';
+  const nums=(d.status==='up')?`<span class="dash" style="font-size:26px">vs</span>`:`${d.hs}<span class="dash">-</span>${d.as}`;
+  const evs=(d.events||[]).filter(e=>(e.text&&e.text.trim())||e.type==='goal');
+  const ev=evs.length?evs.map(e=>{
+    if(e.side==='none'||e.type==='note')
+      return `<div class="md-ev note"><span class="md-ev-ball">${mdEventIcon(e.type)}</span><span class="md-ev-nm" style="text-align:center;font-style:italic;color:var(--muted)">${escAttr(e.text||'')}</span></div>`;
+    const away=e.side==='away';
+    return `<div class="md-ev ${away?'away':''}"><span class="md-ev-ball">${mdEventIcon(e.type)}</span><span class="md-ev-nm">${escAttr(e.text||'Goal')}</span></div>`;
+  }).join(''):'<div class="md-empty-ev">No events yet</div>';
+  return `<div class="md-card">
+    <div class="md-top"><span class="md-comp">${escAttr(d.comp||'')}</span>
+      <span class="md-status ${stCls}">${stTxt}</span></div>
+    <div class="md-stage">${escAttr(d.stage||'')}</div>
+    <div class="md-score">
+      <div class="md-team home"><div class="md-badge">${escAttr(d.homeBadge||'?')}</div><div class="md-tn">${escAttr(d.home||'Home')}</div></div>
+      <div class="md-nums">${nums}</div>
+      <div class="md-team away"><div class="md-badge">${escAttr(d.awayBadge||'?')}</div><div class="md-tn">${escAttr(d.away||'Away')}</div></div>
+    </div>
+    <div class="md-events"><div class="md-ev-hd">${escAttr(d.evHead||'Events')}</div>${ev}</div>
+    <div class="md-foot">Nepcali FC</div>
+  </div>`;
+}
+
+function mdRenderPreview(){
+  const wrap=document.getElementById('md-preview');
+  if(!wrap)return;
+  const m=tMatches.find(x=>x.id===mdMatchId);
+  if(!m){wrap.innerHTML='<div class="empty">Pick a match</div>';return;}
+  wrap.innerHTML=mdPreviewHTML(mdNormFromTournament(m));
+}
+
+async function mdRefresh(){
+  if(!supa){mdRenderPreview();return;}
+  await loadTournament();
+  renderMatchday();
+}
+function mdStartPolling(){
+  mdStopPolling();
+  mdPollTimer=setInterval(async()=>{
+    if(!supa)return;
+    const live=document.getElementById('t-live');
+    if(!live||!live.classList.contains('on')){mdStopPolling();return;}
+    await loadTournament();
+    renderMatchday();
+  },15000);
+}
+function mdStopPolling(){if(mdPollTimer){clearInterval(mdPollTimer);mdPollTimer=null;}}
+
+function mdRoundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  if(ctx.roundRect){ctx.roundRect(x,y,w,h,r);return;}
+  ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);
+  ctx.closePath();
+}
+function mdBadgeCircle(ctx,cx,cy,r,letter,away){
+  const g=ctx.createLinearGradient(cx-r,cy-r,cx+r,cy+r);
+  if(away){g.addColorStop(0,'#e0492f');g.addColorStop(1,'#c0392b');}
+  else{g.addColorStop(0,'#e8c766');g.addColorStop(1,'#b8902b');}
+  ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.fill();
+  ctx.lineWidth=5;ctx.strokeStyle='#ffffff';ctx.stroke();
+  ctx.fillStyle=away?'#fff':'#1a1205';
+  ctx.font='700 '+Math.round(r*0.95)+'px Georgia, serif';
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText((letter||'?'),cx,cy+2);
+}
+function mdFitText(ctx,text,max,startPx,font){
+  let px=startPx;
+  do{ctx.font=font.replace('%',px);if(ctx.measureText(text).width<=max)break;px-=4;}while(px>18);
+  return px;
+}
+// Draw the shareable graphic (1080x1350 portrait) onto #md-canvas from a
+// normalized card object (see mdNormFromTournament / mdNormCustom).
+function mdDrawData(d){
+  const c=document.getElementById('md-canvas');
+  const ctx=c.getContext('2d');
+  const W=1080,H=1350;
+  ctx.clearRect(0,0,W,H);
+  const bg=ctx.createLinearGradient(0,0,0,H);
+  bg.addColorStop(0,'#0c1a36');bg.addColorStop(.55,'#0a1428');bg.addColorStop(1,'#0b1122');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+  const glow=ctx.createRadialGradient(W/2,-120,60,W/2,-120,760);
+  glow.addColorStop(0,'rgba(212,175,55,.20)');glow.addColorStop(1,'rgba(212,175,55,0)');
+  ctx.fillStyle=glow;ctx.fillRect(0,0,W,760);
+  ctx.strokeStyle='rgba(212,175,55,.5)';ctx.lineWidth=4;
+  mdRoundRect(ctx,26,26,W-52,H-52,40);ctx.stroke();
+
+  const st=d.status||'up';
+  ctx.textAlign='center';ctx.textBaseline='alphabetic';
+
+  ctx.fillStyle='#e8c766';ctx.font='700 30px Georgia, serif';
+  ctx.fillText((d.comp||'NEP CALI').toUpperCase(),W/2,120);
+  if(d.stage){ctx.fillStyle='#62748f';ctx.font='600 22px -apple-system, sans-serif';ctx.fillText(d.stage.toUpperCase(),W/2,160);}
+
+  const stTxt=st==='live'?'● LIVE':st==='ft'?'FULL-TIME':'UPCOMING';
+  ctx.font='800 24px -apple-system, sans-serif';
+  const pw=ctx.measureText(stTxt).width+52,px=W/2-pw/2,py=196,ph=48;
+  ctx.fillStyle=st==='live'?'#c0392b':(st==='ft'?'#1a2c4a':'#12233f');
+  mdRoundRect(ctx,px,py,pw,ph,24);ctx.fill();
+  if(st!=='live'){ctx.strokeStyle='rgba(212,175,55,.45)';ctx.lineWidth=2;mdRoundRect(ctx,px,py,pw,ph,24);ctx.stroke();}
+  ctx.fillStyle=st==='live'?'#fff':(st==='ft'?'#9fb0c9':'#e8c766');
+  ctx.textBaseline='middle';ctx.fillText(stTxt,W/2,py+ph/2+1);
+  ctx.textBaseline='alphabetic';
+
+  const cyBadge=440,rBadge=92,leftX=250,rightX=830;
+  mdBadgeCircle(ctx,leftX,cyBadge,rBadge,(d.homeBadge||'?'),false);
+  mdBadgeCircle(ctx,rightX,cyBadge,rBadge,(d.awayBadge||'?'),true);
+  ctx.fillStyle='#fff';
+  const hn=d.home||'Home',an=d.away||'Away';
+  let fp=mdFitText(ctx,hn,340,34,'700 %px -apple-system, sans-serif');
+  ctx.font='700 '+fp+'px -apple-system, sans-serif';ctx.fillText(hn,leftX,cyBadge+rBadge+56);
+  fp=mdFitText(ctx,an,340,34,'700 %px -apple-system, sans-serif');
+  ctx.font='700 '+fp+'px -apple-system, sans-serif';ctx.fillText(an,rightX,cyBadge+rBadge+56);
+  if(st==='up'){
+    ctx.fillStyle='#d4af37';ctx.font='700 46px Georgia, serif';ctx.fillText('vs',W/2,cyBadge+16);
+  }else{
+    ctx.fillStyle='#fff';ctx.font='700 130px Georgia, serif';
+    ctx.fillText(d.hs+'',W/2-70,cyBadge+44);
+    ctx.fillText(d.as+'',W/2+70,cyBadge+44);
+    ctx.fillStyle='#d4af37';ctx.font='700 70px Georgia, serif';ctx.fillText('-',W/2,cyBadge+34);
+  }
+
+  let y=720;
+  ctx.strokeStyle='rgba(212,175,55,.25)';ctx.lineWidth=2;
+  ctx.beginPath();ctx.setLineDash([8,8]);ctx.moveTo(90,y);ctx.lineTo(W-90,y);ctx.stroke();ctx.setLineDash([]);
+  y+=52;
+  ctx.fillStyle='#e8c766';ctx.font='800 24px -apple-system, sans-serif';ctx.textAlign='center';
+  ctx.fillText((d.evHead||'EVENTS').toUpperCase(),W/2,y);
+  y+=20;
+  const evs=(d.events||[]).filter(e=>(e.text&&e.text.trim())||e.type==='goal');
+  if(!evs.length){
+    ctx.fillStyle='#62748f';ctx.font='400 26px -apple-system, sans-serif';
+    ctx.fillText('No events yet',W/2,y+50);
+  }else{
+    const maxLines=14;
+    evs.slice(0,maxLines).forEach(e=>{
+      y+=48;
+      const icon=mdEventIcon(e.type);
+      const nm=(e.text&&e.text.trim())?e.text.trim():'Goal';
+      if(e.side==='none'||e.type==='note'){
+        ctx.textAlign='center';ctx.fillStyle='#9fb0c9';ctx.font='italic 400 25px -apple-system, sans-serif';
+        ctx.fillText(icon+'  '+nm,W/2,y);
+      }else if(e.side==='away'){
+        ctx.textAlign='right';ctx.fillStyle='#fff';ctx.font='600 28px -apple-system, sans-serif';
+        const nmW=ctx.measureText(nm).width;ctx.fillText(nm,W-120,y);
+        ctx.font='400 24px -apple-system, sans-serif';ctx.fillText(icon,W-120-nmW-14,y);
+      }else{
+        ctx.textAlign='left';ctx.font='400 24px -apple-system, sans-serif';ctx.fillStyle='#e8c766';
+        ctx.fillText(icon,120,y);
+        ctx.fillStyle='#fff';ctx.font='600 28px -apple-system, sans-serif';ctx.fillText(nm,158,y);
+      }
+    });
+    if(evs.length>maxLines){
+      y+=44;ctx.textAlign='center';ctx.fillStyle='#62748f';ctx.font='400 22px -apple-system, sans-serif';
+      ctx.fillText('+ '+(evs.length-maxLines)+' more',W/2,y);
+    }
+  }
+
+  ctx.textAlign='center';ctx.fillStyle='#5a6b85';ctx.font='600 20px -apple-system, sans-serif';
+  const dateStr=new Date().toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'});
+  ctx.fillText('NEPCALI FC   ·   '+dateStr.toUpperCase(),W/2,H-70);
+  return c;
+}
+
+function mdFileNameFromData(d){
+  const s=((d.home||'home')+'-vs-'+(d.away||'away')).replace(/[^a-z0-9]+/gi,'_').replace(/^_|_$/g,'');
+  return 'nepcali-'+(s||'match')+'.png';
+}
+function mdDownloadBlob(blob,name){
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=name;document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},1500);
+}
+function mdExport(d,share){
+  mdDrawData(d);
+  document.getElementById('md-canvas').toBlob(async function(blob){
+    if(!blob){alert('Could not create the image.');return;}
+    const name=mdFileNameFromData(d);
+    if(share){
+      const file=new File([blob],name,{type:'image/png'});
+      const text=`${d.home||'Home'} ${d.status==='up'?'vs':(d.hs+'-'+d.as)} ${d.away||'Away'} — Nepcali FC`;
+      try{
+        if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:'Nepcali FC',text});return;}
+      }catch(e){if(e&&e.name==='AbortError')return;}
+      mdDownloadBlob(blob,name);
+      alert('Direct sharing isn’t supported here, so the image was downloaded — post it to social media manually.');
+    }else{
+      mdDownloadBlob(blob,name);
+    }
+  },'image/png');
+}
+function downloadMatchday(){const m=tMatches.find(x=>x.id===mdMatchId);if(!m){alert('Pick a match first');return;}mdExport(mdNormFromTournament(m),false);}
+function shareMatchday(){const m=tMatches.find(x=>x.id===mdMatchId);if(!m){alert('Pick a match first');return;}mdExport(mdNormFromTournament(m),true);}
+function downloadCustom(){mdExport(mdNormCustom(),false);}
+function shareCustom(){mdExport(mdNormCustom(),true);}
+
+// ---- Custom / external matchday editor (main-page tab) ----
+function cmModel(){
+  if(!_settings.custom_match)_settings.custom_match={comp:'Nepcali FC',stage:'Friendly',home:'',away:'',hs:0,as:0,status:'up',events:[]};
+  if(!_settings.custom_match.events)_settings.custom_match.events=[];
+  return _settings.custom_match;
+}
+function cmRenderPreview(){const el=document.getElementById('cm-preview');if(el)el.innerHTML=mdPreviewHTML(mdNormCustom());}
+function cmSet(f,v){cmModel()[f]=v;saveSettings();cmRenderPreview();}
+function cmSetEvent(i,f,v){const e=cmModel().events[i];if(!e)return;e[f]=v;saveSettings();cmRenderPreview();}
+function cmAddEvent(){cmModel().events.push({side:'home',type:'goal',text:''});saveSettings();cmRenderEvents();cmRenderPreview();}
+function cmAddComment(){cmModel().events.push({side:'none',type:'note',text:''});saveSettings();cmRenderEvents();cmRenderPreview();}
+function cmDelEvent(i){cmModel().events.splice(i,1);saveSettings();cmRenderEvents();cmRenderPreview();}
+function cmTypeOpts(sel){return [['goal','⚽ Goal'],['yellow','🟨 Yellow'],['red','🟥 Red'],['sub','🔁 Sub'],['note','💬 Comment']].map(o=>`<option value="${o[0]}" ${o[0]===sel?'selected':''}>${o[1]}</option>`).join('');}
+function cmSideOpts(sel){return [['home','Home'],['away','Away'],['none','—']].map(o=>`<option value="${o[0]}" ${o[0]===sel?'selected':''}>${o[1]}</option>`).join('');}
+function cmRenderEvents(){
+  const el=document.getElementById('cm-events');if(!el)return;
+  const evs=cmModel().events;
+  if(!evs.length){el.innerHTML='<div class="empty">No events yet. Add goals, cards or comments.</div>';return;}
+  el.innerHTML=evs.map((e,i)=>`<div class="scorer-entry">
+    <select class="team-sel" onchange="cmSetEvent(${i},'type',this.value)">${cmTypeOpts(e.type)}</select>
+    <select class="team-sel" onchange="cmSetEvent(${i},'side',this.value)">${cmSideOpts(e.side)}</select>
+    <input class="name-inp" type="text" placeholder="${e.type==='note'?'comment / commentary':'name or detail'}" value="${escAttr(e.text||'')}" oninput="cmSetEvent(${i},'text',this.value)">
+    <button class="rm-btn" onclick="cmDelEvent(${i})">×</button></div>`).join('');
+}
+function renderCustomMatch(){
+  const c=cmModel();
+  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.value=(v==null?'':v);};
+  set('cm-comp',c.comp);set('cm-stage',c.stage);set('cm-home',c.home);set('cm-away',c.away);
+  set('cm-hs',c.hs);set('cm-as',c.as);
+  const st=document.getElementById('cm-status');if(st)st.value=c.status||'up';
+  cmRenderEvents();cmRenderPreview();
+}
+
 // ---- Tournament history (saved records of completed tournaments) ----
 async function finishTournament(){
   const playedCount=tMatches.filter(isPlayed).length;
@@ -1044,6 +1456,8 @@ function show(id,btn){
   document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('on'));
   document.getElementById(id).classList.add('on');btn.classList.add('on');
+  if(id!=='tournament')mdStopPolling();
+  if(id==='matchday')renderCustomMatch();
 }
 
 // ---- Site usage (unique visitors by salted IP hash) ----
@@ -1097,17 +1511,19 @@ function enterApp(tabId){
   document.getElementById('app').style.display='block';
   window.scrollTo(0,0);
   if(tabId){
-    const map={tournament:0,dashboard:1,lineup:2,roster:3,money:4};
+    const map={tournament:0,matchday:1,dashboard:2,lineup:3,roster:4,money:5};
     const btn=document.querySelectorAll('.nav-btn')[map[tabId]];
     if(btn)btn.click();
   }
 }
 
+function enterMatchday(){enterApp('matchday');}
 function updateWelcomeStats(){}
 function subshow(id,btn){
   document.querySelectorAll('.subsec').forEach(s=>s.classList.remove('on'));
   document.querySelectorAll('.subnav-btn').forEach(b=>b.classList.remove('on'));
   document.getElementById(id).classList.add('on');btn.classList.add('on');
+  if(id==='t-live'){renderMatchday();mdStartPolling();}else{mdStopPolling();}
 }
 
 if(initSupabase()){
