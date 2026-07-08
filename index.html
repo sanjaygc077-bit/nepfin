@@ -180,6 +180,11 @@ tr:last-child td{border-bottom:none}
 .md-empty-ev{text-align:center;color:var(--muted2);font-size:12px;padding:6px 0}
 .md-foot{position:relative;z-index:1;margin-top:14px;text-align:center;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted2)}
 .md-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+/* ---- RSVP polls ---- */
+.rsvp-summary{background:var(--field);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:14px;color:#fff;margin:8px 0 12px}
+.rsvp-form{border-top:1px solid var(--line);padding-top:12px}
+.rsvp-responses{margin-top:6px}
+.guest-badge{display:inline-block;background:var(--gold);color:#1a1205;font-size:11px;font-weight:800;padding:1px 6px;border-radius:20px;vertical-align:middle}
 /* ---- Social links ---- */
 .socials{display:flex;justify-content:center;align-items:center;gap:14px;flex-wrap:wrap;padding:18px 24px 4px;background:transparent}
 .socials-hd{width:100%;text-align:center;color:#5a6b85;font-size:11px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px}
@@ -201,6 +206,7 @@ tr:last-child td{border-bottom:none}
 .social-edit-box input{width:100%;padding:10px 12px;border-radius:9px;border:1px solid rgba(212,175,55,.35);background:#0f1d38;color:#f1f5fb;font-size:13px;font-family:inherit}
 .social-edit-box input:focus{outline:none;border-color:#d4af37}
 .social-edit-note{color:#5a6b85;font-size:11px;margin-top:10px;line-height:1.4}
+.est-line{text-align:center;color:#5a6b85;font-size:11px;letter-spacing:.14em;text-transform:uppercase;margin-top:10px}
 </style>
 </head>
 <body>
@@ -239,6 +245,7 @@ tr:last-child td{border-bottom:none}
         <div class="social-edit-note">Links show as logo buttons above. Paste a full URL, or leave blank to hide one.</div>
       </div>
     </div>
+    <div class="est-line">Est. 2015</div>
   </div>
   <div class="features" id="features">
     <div class="features-hd">Explore Nepcali FC</div>
@@ -295,13 +302,27 @@ tr:last-child td{border-bottom:none}
     <button class="logout" id="auth-btn" onclick="authBtnClick()">Sign in</button>
   </header>
 
-  <div class="nav" style="grid-template-columns:repeat(6,1fr)">
+  <div class="nav" style="grid-template-columns:repeat(7,1fr)">
     <button class="nav-btn on" onclick="show('tournament',this)"><i>🏆</i>Cup</button>
     <button class="nav-btn" onclick="show('matchday',this)"><i>📢</i>Live</button>
+    <button class="nav-btn" onclick="show('rsvp',this)"><i>🗳️</i>RSVP</button>
     <button class="nav-btn" onclick="show('dashboard',this)"><i>📊</i>Dash</button>
     <button class="nav-btn" onclick="show('lineup',this)"><i>⚽</i>XI</button>
     <button class="nav-btn" onclick="show('roster',this)"><i>👥</i>Roster</button>
     <button class="nav-btn" onclick="gatedShow('money',this)"><i>💰</i>Money</button>
+  </div>
+
+  <div id="rsvp" class="sec">
+    <div class="card">
+      <div class="card-hd">🗳️ New poll / RSVP</div>
+      <div class="muted" style="margin-bottom:8px">Create an attendance poll. People RSVP and add their guests (+1, +2) — everyone is counted here in one place.</div>
+      <label>Question / event</label>
+      <input id="poll-q" type="text" placeholder="Sunday match — who's in?">
+      <label>When / details (optional)</label>
+      <input id="poll-when" type="text" placeholder="Sun 6:00 PM · City Ground">
+      <button class="btn" onclick="createPoll()">Create poll</button>
+    </div>
+    <div id="rsvp-list"><div class="empty">Loading…</div></div>
   </div>
 
   <div id="matchday" class="sec">
@@ -765,6 +786,7 @@ async function loadAll(){
   await loadSettings();
   renderDashboardExtras();
   updateWelcomeStats();
+  loadPolls();
   loadPrivate();
 }
 // Roster + Dashboard are public to read; Money tab is gated in the UI.
@@ -1460,6 +1482,117 @@ function toggleSocialEdit(){
   b.style.display=(b.style.display==='none'||!b.style.display)?'block':'none';
 }
 
+// ---- RSVP polls (attendance + guest tracking, shareable to Viber) ----
+let polls=[],pollResponses=[],pollsReady=true;
+const RSVP_STATUS={going:{l:'Going',c:'#34d399'},maybe:{l:'Maybe',c:'#e8c766'},cant:{l:"Can't",c:'#f87171'}};
+
+async function loadPolls(){
+  if(!supa){pollsReady=false;renderRSVP();return;}
+  const p=await supa.from('polls').select('*').order('created_at',{ascending:false});
+  if(p.error){pollsReady=false;renderRSVP();return;}
+  pollsReady=true;polls=p.data||[];
+  const r=await supa.from('poll_responses').select('*').order('created_at',{ascending:true});
+  pollResponses=r.error?[]:(r.data||[]);
+  renderRSVP();
+}
+async function createPoll(){
+  if(!supa)return;
+  const q=document.getElementById('poll-q').value.trim();
+  if(!q){alert('Enter a question');return;}
+  const when=document.getElementById('poll-when').value.trim();
+  const {error}=await supa.from('polls').insert({question:q,when_text:when});
+  if(error){alert('Could not create poll.\n\n'+(error.message||'')+'\n\nIf this mentions a missing table, run schema-polls.sql in Supabase.');return;}
+  document.getElementById('poll-q').value='';document.getElementById('poll-when').value='';
+  loadPolls();
+}
+async function deletePoll(id){
+  if(!confirm('Delete this poll and all its responses?'))return;
+  await supa.from('polls').delete().eq('id',id);
+  loadPolls();
+}
+async function submitRSVP(pollId){
+  const name=document.getElementById('rsvp-name-'+pollId).value.trim();
+  if(!name){alert('Enter your name');return;}
+  const status=document.getElementById('rsvp-status-'+pollId).value;
+  let guests=parseInt(document.getElementById('rsvp-guests-'+pollId).value)||0;if(guests<0)guests=0;
+  const gnames=document.getElementById('rsvp-gnames-'+pollId).value.trim();
+  const {error}=await supa.from('poll_responses').insert({poll_id:pollId,name,status,guests,guest_names:gnames});
+  if(error){alert(error.message);return;}
+  try{localStorage.setItem('nc_rsvp_name',name);}catch(e){}
+  loadPolls();
+}
+async function deleteResponse(id){
+  await supa.from('poll_responses').delete().eq('id',id);
+  loadPolls();
+}
+function pollTally(pollId){
+  const rs=pollResponses.filter(r=>r.poll_id===pollId);
+  const going=rs.filter(r=>r.status==='going');
+  const members=going.length;
+  const guests=going.reduce((s,r)=>s+(Number(r.guests)||0),0);
+  return {members,guests,total:members+guests,maybe:rs.filter(r=>r.status==='maybe').length,cant:rs.filter(r=>r.status==='cant').length,rs};
+}
+function renderRSVP(){
+  const el=document.getElementById('rsvp-list');if(!el)return;
+  if(!pollsReady){
+    el.innerHTML='<div class="card"><div class="banner" style="display:block">⚠️ Polls need a one-time setup. Run <b>schema-polls.sql</b> in your Supabase SQL Editor, then reload.</div></div>';
+    return;
+  }
+  if(!polls.length){el.innerHTML='<div class="empty">No polls yet. Create one above.</div>';return;}
+  const myName=(function(){try{return localStorage.getItem('nc_rsvp_name')||'';}catch(e){return '';}})();
+  el.innerHTML=polls.map(p=>{
+    const t=pollTally(p.id);
+    const rows=t.rs.map(r=>{
+      const st=RSVP_STATUS[r.status]||RSVP_STATUS.going;
+      const g=(Number(r.guests)||0);
+      const gb=g>0?` <span class="guest-badge">+${g}</span>`:'';
+      const meta=[st.l,g>0&&r.guest_names?('guests: '+escAttr(r.guest_names)):''].filter(Boolean).join(' · ');
+      return `<div class="list-row">
+        <div class="player-info"><div class="player-name">${escAttr(r.name)}${gb}</div><div class="player-meta">${meta}</div></div>
+        <span class="pill" style="background:${st.c};color:#0a1428;font-weight:700">${st.l}</span>
+        <button class="del" onclick="deleteResponse('${r.id}')" title="Remove">🗑</button></div>`;
+    }).join('')||'<div class="empty">No responses yet — be the first.</div>';
+    const opts=['going','maybe','cant'].map(s=>`<option value="${s}">${RSVP_STATUS[s].l}</option>`).join('');
+    return `<div class="card">
+      <div class="card-hd">${escAttr(p.question)}</div>
+      ${p.when_text?`<div class="muted" style="margin-top:-4px;margin-bottom:6px">🗓️ ${escAttr(p.when_text)}</div>`:''}
+      <div class="rsvp-summary"><b>${t.total}</b> attending <span class="muted">(${t.members} ${t.members===1?'person':'people'}${t.guests?(' + '+t.guests+' guest'+(t.guests===1?'':'s')):''})</span>${t.maybe?` · ${t.maybe} maybe`:''}${t.cant?` · ${t.cant} can’t`:''}</div>
+      <div class="rsvp-form">
+        <div class="row2">
+          <div><label>Your name</label><input id="rsvp-name-${p.id}" type="text" value="${escAttr(myName)}" placeholder="Your name"></div>
+          <div><label>Status</label><select id="rsvp-status-${p.id}">${opts}</select></div>
+        </div>
+        <div class="row2">
+          <div><label>Guests (+)</label><input id="rsvp-guests-${p.id}" type="number" min="0" max="20" placeholder="0"></div>
+          <div><label>Guest names (optional)</label><input id="rsvp-gnames-${p.id}" type="text" placeholder="e.g. Sam, Alex"></div>
+        </div>
+        <button class="btn" onclick="submitRSVP('${p.id}')">Add my RSVP</button>
+      </div>
+      <div class="rsvp-responses">${rows}</div>
+      <div class="md-actions">
+        <button class="btn" onclick="shareViber('${p.id}')">📤 Share to Viber</button>
+        <button class="btn" onclick="copyPollLink('${p.id}')">🔗 Copy link</button>
+      </div>
+      <div style="text-align:right;margin-top:8px"><button class="rm-btn" onclick="deletePoll('${p.id}')">Delete poll</button></div>
+    </div>`;
+  }).join('');
+}
+function pollShareText(p){
+  const url=location.origin+location.pathname+'#rsvp';
+  return `⚽ ${p.question}${p.when_text?(' — '+p.when_text):''}\nRSVP here (add your +1s): ${url}`;
+}
+function shareViber(pollId){
+  const p=polls.find(x=>x.id===pollId);if(!p)return;
+  window.location.href='viber://forward?text='+encodeURIComponent(pollShareText(p));
+}
+function copyPollLink(pollId){
+  const p=polls.find(x=>x.id===pollId);if(!p)return;
+  const txt=pollShareText(p);
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(()=>alert('Copied! Paste it into Viber, WhatsApp, or anywhere.'),()=>prompt('Copy this:',txt));
+  }else{prompt('Copy this:',txt);}
+}
+
 // ---- Tournament history (saved records of completed tournaments) ----
 async function finishTournament(){
   const playedCount=tMatches.filter(isPlayed).length;
@@ -1535,6 +1668,7 @@ function show(id,btn){
   document.getElementById(id).classList.add('on');btn.classList.add('on');
   if(id!=='tournament')mdStopPolling();
   if(id==='matchday')renderCustomMatch();
+  if(id==='rsvp')loadPolls();
 }
 
 // ---- Site usage (unique visitors by salted IP hash) ----
@@ -1588,7 +1722,7 @@ function enterApp(tabId){
   document.getElementById('app').style.display='block';
   window.scrollTo(0,0);
   if(tabId){
-    const map={tournament:0,matchday:1,dashboard:2,lineup:3,roster:4,money:5};
+    const map={tournament:0,matchday:1,rsvp:2,dashboard:3,lineup:4,roster:5,money:6};
     const btn=document.querySelectorAll('.nav-btn')[map[tabId]];
     if(btn)btn.click();
   }
@@ -1612,7 +1746,7 @@ if(initSupabase()){
 
 // Deep-link support: open straight to a tab via URL hash (e.g. index.html#dash)
 (function(){
-  const map={dash:'dashboard',dashboard:'dashboard',cup:'tournament',tournament:'tournament',xi:'lineup',lineup:'lineup',roster:'roster',money:'money'};
+  const map={dash:'dashboard',dashboard:'dashboard',cup:'tournament',tournament:'tournament',xi:'lineup',lineup:'lineup',roster:'roster',money:'money',rsvp:'rsvp',live:'matchday',matchday:'matchday'};
   const tab=map[(location.hash||'').replace('#','').toLowerCase()];
   if(tab)enterApp(tab);
 })();
