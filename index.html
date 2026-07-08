@@ -414,6 +414,11 @@ function toggleMode(){
 }
 let isLoggedIn=false;
 
+// Emails allowed to view/edit the Money section. Add more members here.
+const MONEY_EDITORS=['sanjay.gc09@gmail.com'];
+let userEmail=null;
+function canEditMoney(){return !!userEmail && MONEY_EDITORS.includes(userEmail.trim().toLowerCase());}
+
 function openLogin(){document.getElementById('login-modal').style.display='flex';}
 function closeLogin(){document.getElementById('login-modal').style.display='none';}
 function authBtnClick(){ if(isLoggedIn) doLogout(); else openLogin(); }
@@ -427,6 +432,7 @@ async function doAuth(){
   if(res.error){err.textContent=res.error.message;err.style.display='block';return;}
   if(isSignup&&!res.data.session){err.style.color='#16a34a';err.textContent='Account created. Check email to confirm, then sign in.';err.style.display='block';toggleMode();return;}
   isLoggedIn=true;
+  userEmail=(res.data.user&&res.data.user.email)||email;
   closeLogin();
   document.getElementById('auth-btn').textContent='Sign out';
   loadPrivate();
@@ -434,12 +440,17 @@ async function doAuth(){
 async function doLogout(){await supa.auth.signOut();location.reload();}
 async function checkSession(){
   const {data}=await supa.auth.getSession();
-  if(data.session){isLoggedIn=true;document.getElementById('auth-btn').textContent='Sign out';loadPrivate();}
+  if(data.session){isLoggedIn=true;userEmail=data.session.user&&data.session.user.email;document.getElementById('auth-btn').textContent='Sign out';loadPrivate();}
 }
 
 // Tabs that need login. If not logged in, open the modal instead of switching.
+// The Money tab additionally requires an allowlisted member email.
 function gatedShow(id,btn){
   if(!isLoggedIn){openLogin();return;}
+  if(id==='money'&&!canEditMoney()){
+    alert('This account isn’t authorized for the Money section.\n\nSigned in as: '+(userEmail||'unknown'));
+    return;
+  }
   show(id,btn);
 }
 
@@ -471,6 +482,7 @@ function posOpts(sel){return '<option value="">— pos —</option>'+['GK','DEF'
 
 async function loadPayments(){const {data,error}=await supa.from('payments').select('*, players(name, team)').order('created_at',{ascending:false});if(error){console.error(error);return[];}return data;}
 async function addPayment(){
+  if(!canEditMoney()){alert('You are not authorized to edit the Money section.');return;}
   const player_id=document.getElementById('m-player').value;
   const amount=parseFloat(document.getElementById('m-amount').value);
   if(!player_id){alert('Select a player');return;}
@@ -480,7 +492,7 @@ async function addPayment(){
   document.getElementById('m-amount').value='';document.getElementById('m-note').value='';
   loadAll();
 }
-async function deletePayment(id){await supa.from('payments').delete().eq('id',id);loadAll();}
+async function deletePayment(id){if(!canEditMoney()){alert('You are not authorized to edit the Money section.');return;}await supa.from('payments').delete().eq('id',id);loadAll();}
 
 async function loadTournament(){
   let {data}=await supa.from('tournaments').select('*').order('created_at',{ascending:false});
