@@ -180,10 +180,27 @@ tr:last-child td{border-bottom:none}
 .md-empty-ev{text-align:center;color:var(--muted2);font-size:12px;padding:6px 0}
 .md-foot{position:relative;z-index:1;margin-top:14px;text-align:center;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted2)}
 .md-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
-/* ---- RSVP polls ---- */
-.rsvp-summary{background:var(--field);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:14px;color:#fff;margin:8px 0 12px}
-.rsvp-form{border-top:1px solid var(--line);padding-top:12px}
-.rsvp-responses{margin-top:6px}
+/* ---- RSVP polls (Viber-style) ---- */
+.poll-opt{margin-bottom:10px}
+.poll-opt-top{display:flex;justify-content:space-between;font-size:14px;font-weight:600;color:#fff;margin-bottom:5px}
+.poll-bar{height:10px;background:var(--field);border-radius:20px;overflow:hidden}
+.poll-bar-fill{height:100%;border-radius:20px;transition:width .3s}
+.poll-bar-fill.yes{background:linear-gradient(90deg,#34d399,#10b981)}
+.poll-bar-fill.no{background:linear-gradient(90deg,#f87171,#ef4444)}
+.rsvp-total{text-align:center;font-size:14px;color:var(--gold-l);margin:12px 0}
+.rsvp-form{border-top:1px solid var(--line);padding-top:14px}
+.rsvp-form>input{margin-bottom:10px}
+.guest-step{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;font-size:14px;color:var(--txt)}
+.stepper{display:flex;align-items:center;gap:14px}
+.stepper button{width:38px;height:38px;border-radius:50%;border:1px solid var(--line2);background:var(--field);color:#fff;font-size:22px;font-weight:700;cursor:pointer;line-height:1}
+.stepper button:active{opacity:.7}
+.stepper span{min-width:22px;text-align:center;font-size:18px;font-weight:700;color:#fff}
+.yn{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.yn button{padding:14px;border:none;border-radius:11px;font-size:15px;font-weight:700;cursor:pointer;color:#fff}
+.yn button:active{opacity:.85}
+.yn-yes{background:linear-gradient(135deg,#34d399,#059669)}
+.yn-no{background:linear-gradient(135deg,#64748b,#475569)}
+.rsvp-responses{margin-top:14px}
 .guest-badge{display:inline-block;background:var(--gold);color:#1a1205;font-size:11px;font-weight:800;padding:1px 6px;border-radius:20px;vertical-align:middle}
 /* ---- Social links ---- */
 .socials{display:flex;justify-content:center;align-items:center;gap:14px;flex-wrap:wrap;padding:18px 24px 4px;background:transparent}
@@ -1484,7 +1501,7 @@ function toggleSocialEdit(){
 
 // ---- RSVP polls (attendance + guest tracking, shareable to Viber) ----
 let polls=[],pollResponses=[],pollsReady=true;
-const RSVP_STATUS={going:{l:'Going',c:'#34d399'},maybe:{l:'Maybe',c:'#e8c766'},cant:{l:"Can't",c:'#f87171'}};
+const RSVP_STATUS={going:{l:'Going',c:'#34d399'},cant:{l:'Not going',c:'#f87171'}};
 
 async function loadPolls(){
   if(!supa){pollsReady=false;renderRSVP();return;}
@@ -1510,15 +1527,19 @@ async function deletePoll(id){
   await supa.from('polls').delete().eq('id',id);
   loadPolls();
 }
-async function submitRSVP(pollId){
+let _rsvpGuests={};
+function rsvpGuest(id,d){
+  _rsvpGuests[id]=Math.max(0,Math.min(20,(_rsvpGuests[id]||0)+d));
+  const el=document.getElementById('rsvp-g-'+id);if(el)el.textContent=_rsvpGuests[id];
+}
+async function rsvpVote(pollId,status){
   const name=document.getElementById('rsvp-name-'+pollId).value.trim();
-  if(!name){alert('Enter your name');return;}
-  const status=document.getElementById('rsvp-status-'+pollId).value;
-  let guests=parseInt(document.getElementById('rsvp-guests-'+pollId).value)||0;if(guests<0)guests=0;
-  const gnames=document.getElementById('rsvp-gnames-'+pollId).value.trim();
-  const {error}=await supa.from('poll_responses').insert({poll_id:pollId,name,status,guests,guest_names:gnames});
+  if(!name){alert('Type your name first');document.getElementById('rsvp-name-'+pollId).focus();return;}
+  const guests=status==='going'?(_rsvpGuests[pollId]||0):0;
+  const {error}=await supa.from('poll_responses').insert({poll_id:pollId,name,status,guests});
   if(error){alert(error.message);return;}
   try{localStorage.setItem('nc_rsvp_name',name);}catch(e){}
+  _rsvpGuests[pollId]=0;
   loadPolls();
 }
 async function deleteResponse(id){
@@ -1530,7 +1551,7 @@ function pollTally(pollId){
   const going=rs.filter(r=>r.status==='going');
   const members=going.length;
   const guests=going.reduce((s,r)=>s+(Number(r.guests)||0),0);
-  return {members,guests,total:members+guests,maybe:rs.filter(r=>r.status==='maybe').length,cant:rs.filter(r=>r.status==='cant').length,rs};
+  return {members,guests,total:members+guests,cant:rs.filter(r=>r.status==='cant').length,rs};
 }
 function renderRSVP(){
   const el=document.getElementById('rsvp-list');if(!el)return;
@@ -1546,27 +1567,23 @@ function renderRSVP(){
       const st=RSVP_STATUS[r.status]||RSVP_STATUS.going;
       const g=(Number(r.guests)||0);
       const gb=g>0?` <span class="guest-badge">+${g}</span>`:'';
-      const meta=[st.l,g>0&&r.guest_names?('guests: '+escAttr(r.guest_names)):''].filter(Boolean).join(' · ');
       return `<div class="list-row">
-        <div class="player-info"><div class="player-name">${escAttr(r.name)}${gb}</div><div class="player-meta">${meta}</div></div>
+        <div class="player-info"><div class="player-name">${escAttr(r.name)}${gb}</div></div>
         <span class="pill" style="background:${st.c};color:#0a1428;font-weight:700">${st.l}</span>
         <button class="del" onclick="deleteResponse('${r.id}')" title="Remove">🗑</button></div>`;
     }).join('')||'<div class="empty">No responses yet — be the first.</div>';
-    const opts=['going','maybe','cant'].map(s=>`<option value="${s}">${RSVP_STATUS[s].l}</option>`).join('');
+    const yes=t.members,no=t.cant,maxv=Math.max(1,yes+no);
+    const g=_rsvpGuests[p.id]||0;
     return `<div class="card">
       <div class="card-hd">${escAttr(p.question)}</div>
-      ${p.when_text?`<div class="muted" style="margin-top:-4px;margin-bottom:6px">🗓️ ${escAttr(p.when_text)}</div>`:''}
-      <div class="rsvp-summary"><b>${t.total}</b> attending <span class="muted">(${t.members} ${t.members===1?'person':'people'}${t.guests?(' + '+t.guests+' guest'+(t.guests===1?'':'s')):''})</span>${t.maybe?` · ${t.maybe} maybe`:''}${t.cant?` · ${t.cant} can’t`:''}</div>
+      ${p.when_text?`<div class="muted" style="margin-top:-4px;margin-bottom:10px">🗓️ ${escAttr(p.when_text)}</div>`:''}
+      <div class="poll-opt"><div class="poll-opt-top"><span>✅ Yes</span><span>${yes}${t.guests?` <span class="muted">+${t.guests} guest${t.guests===1?'':'s'}</span>`:''}</span></div><div class="poll-bar"><div class="poll-bar-fill yes" style="width:${Math.round(yes/maxv*100)}%"></div></div></div>
+      <div class="poll-opt"><div class="poll-opt-top"><span>❌ No</span><span>${no}</span></div><div class="poll-bar"><div class="poll-bar-fill no" style="width:${Math.round(no/maxv*100)}%"></div></div></div>
+      <div class="rsvp-total"><b>${t.total}</b> coming in total</div>
       <div class="rsvp-form">
-        <div class="row2">
-          <div><label>Your name</label><input id="rsvp-name-${p.id}" type="text" value="${escAttr(myName)}" placeholder="Your name"></div>
-          <div><label>Status</label><select id="rsvp-status-${p.id}">${opts}</select></div>
-        </div>
-        <div class="row2">
-          <div><label>Guests (+)</label><input id="rsvp-guests-${p.id}" type="number" min="0" max="20" placeholder="0"></div>
-          <div><label>Guest names (optional)</label><input id="rsvp-gnames-${p.id}" type="text" placeholder="e.g. Sam, Alex"></div>
-        </div>
-        <button class="btn" onclick="submitRSVP('${p.id}')">Add my RSVP</button>
+        <input id="rsvp-name-${p.id}" type="text" value="${escAttr(myName)}" placeholder="Your name">
+        <div class="guest-step"><span>Bringing guests?</span><div class="stepper"><button onclick="rsvpGuest('${p.id}',-1)">−</button><span id="rsvp-g-${p.id}">${g}</span><button onclick="rsvpGuest('${p.id}',1)">+</button></div></div>
+        <div class="yn"><button class="yn-yes" onclick="rsvpVote('${p.id}','going')">✅ Yes, I'm in</button><button class="yn-no" onclick="rsvpVote('${p.id}','cant')">❌ Can't make it</button></div>
       </div>
       <div class="rsvp-responses">${rows}</div>
       <div class="md-actions">
