@@ -477,6 +477,14 @@ tr:last-child td{border-bottom:none}
       <button class="btn" onclick="addPayment()">Save entry</button>
     </div>
     <div class="card">
+      <div class="card-hd">Log expense (money spent)</div>
+      <label>Amount spent ($)</label>
+      <input id="e-amount" type="number" step="0.01" placeholder="30">
+      <label>What for?</label>
+      <input id="e-note" type="text" placeholder="e.g. ground rental, jerseys, balls">
+      <button class="btn" onclick="addExpense()">Save expense</button>
+    </div>
+    <div class="card">
       <div class="card-hd">Transactions</div>
       <div id="money-list"><div class="empty">Loading…</div></div>
     </div>
@@ -718,6 +726,16 @@ async function addPayment(){
   const {error}=await supa.from('payments').insert({player_id,amount,paid:document.getElementById('m-paid').value==='true',note:document.getElementById('m-note').value.trim()});
   if(error){alert(error.message);return;}
   document.getElementById('m-amount').value='';document.getElementById('m-note').value='';
+  loadAll();
+}
+async function addExpense(){
+  if(!canEditMoney()){alert('You are not authorized to edit the Money section.');return;}
+  const amount=parseFloat(document.getElementById('e-amount').value);
+  if(isNaN(amount)||amount<=0){alert('Enter the amount spent');return;}
+  const note=document.getElementById('e-note').value.trim();
+  const {error}=await supa.from('payments').insert({player_id:null,amount:-Math.abs(amount),paid:true,note:note||'Club expense'});
+  if(error){alert(error.message);return;}
+  document.getElementById('e-amount').value='';document.getElementById('e-note').value='';
   loadAll();
 }
 async function deletePayment(id){if(!canEditMoney()){alert('You are not authorized to edit the Money section.');return;}await supa.from('payments').delete().eq('id',id);loadAll();}
