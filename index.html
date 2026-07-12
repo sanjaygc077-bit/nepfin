@@ -478,8 +478,10 @@ tr:last-child td{border-bottom:none}
     </div>
     <div class="card">
       <div class="card-hd">Log expense (money spent)</div>
-      <label>Amount spent ($)</label>
-      <input id="e-amount" type="number" step="0.01" placeholder="30">
+      <div class="row2">
+        <div><label>Amount spent ($)</label><input id="e-amount" type="number" step="0.01" placeholder="30"></div>
+        <div><label>Date</label><input id="e-date" type="date"></div>
+      </div>
       <label>What for?</label>
       <input id="e-note" type="text" placeholder="e.g. ground rental, jerseys, balls">
       <button class="btn" onclick="addExpense()">Save expense</button>
@@ -733,7 +735,11 @@ async function addExpense(){
   const amount=parseFloat(document.getElementById('e-amount').value);
   if(isNaN(amount)||amount<=0){alert('Enter the amount spent');return;}
   const note=document.getElementById('e-note').value.trim();
-  const {error}=await supa.from('payments').insert({player_id:null,amount:-Math.abs(amount),paid:true,note:note||'Club expense'});
+  const date=document.getElementById('e-date').value||null;
+  const row={player_id:null,amount:-Math.abs(amount),paid:true,note:note||'Club expense',txn_date:date};
+  let {error}=await supa.from('payments').insert(row);
+  // If the txn_date column hasn't been added yet, save without it.
+  if(error&&/txn_date/i.test(error.message||'')){delete row.txn_date;({error}=await supa.from('payments').insert(row));}
   if(error){alert(error.message);return;}
   document.getElementById('e-amount').value='';document.getElementById('e-note').value='';
   loadAll();
@@ -1038,13 +1044,22 @@ function renderRoster(players){
 function editPlayer(id){_editId=id;renderRoster(_players);}
 function doneEdit(){_editId=null;renderRoster(_players);}
 
+function txnDateStr(p){
+  const raw=p.txn_date||p.created_at;if(!raw)return '';
+  const d=new Date(p.txn_date?p.txn_date+'T00:00:00':raw);
+  if(isNaN(d))return '';
+  return d.toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'});
+}
 function renderMoney(players,payments){
+  const ed=document.getElementById('e-date');if(ed&&!ed.value)ed.value=new Date().toISOString().slice(0,10);
   const el=document.getElementById('money-list');
   if(!payments.length){el.innerHTML='<div class="empty">No transactions yet</div>';return;}
   el.innerHTML=payments.map(p=>{
     const isExpense=!p.players&&Number(p.amount)<0;
     const nm=p.players?p.players.name:(isExpense?(p.note||'Club expense'):'(deleted)');
-    const meta=p.players?(p.note||'—'):(isExpense?'Club expense':(p.note||'—'));
+    const dstr=txnDateStr(p);
+    const baseMeta=p.players?(p.note||'—'):(isExpense?'Club expense':(p.note||'—'));
+    const meta=dstr?`${dstr} · ${baseMeta}`:baseMeta;
     const pill=isExpense?'<span class="pill pill-due">Expense</span>':`<span class="pill ${p.paid?'pill-paid':'pill-due'}">${p.paid?'Paid':'Owed'}</span>`;
     return `<div class="list-row"><div class="player-info"><div class="player-name">${nm}</div><div class="player-meta">${meta}</div></div>
       <div style="text-align:right"><div class="pay-amt ${p.amount>=0?'pos':'neg'}">${p.amount<0?'-':''}$${Math.abs(p.amount).toFixed(2)}</div>
