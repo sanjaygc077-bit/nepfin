@@ -236,13 +236,16 @@ tr:last-child td{border-bottom:none}
     </div>
     <p style="font-size:13px;color:#888;margin-bottom:18px">Only the Money tab needs a login. Scores, roster & dashboard are open — anyone can edit the roster too.</p>
     <div id="config-banner" class="banner" style="display:none"></div>
-    <label>Email</label>
-    <input id="email" type="email" placeholder="you@example.com">
-    <label>Password</label>
+    <div id="email-row">
+      <label>Email</label>
+      <input id="email" type="email" placeholder="you@example.com">
+    </div>
+    <label id="pass-label">Password</label>
     <input id="password" type="password" placeholder="at least 6 characters">
     <button class="btn" id="login-btn" onclick="doAuth()">Sign in</button>
     <div class="err" id="auth-err"></div>
     <div class="toggle-link" id="toggle-mode" onclick="toggleMode()">New here? Create an account</div>
+    <div class="toggle-link" id="forgot-link" onclick="forgotPassword()" style="margin-top:8px;color:#888">Forgot password?</div>
   </div>
 </div>
 
@@ -587,6 +590,8 @@ function initSupabase(){
     return false;
   }
   supa=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+  // When a user returns via the password-reset email link, Supabase fires this.
+  supa.auth.onAuthStateChange((event)=>{ if(event==='PASSWORD_RECOVERY') enterRecovery(); });
   return true;
 }
 
@@ -607,7 +612,46 @@ function openLogin(){document.getElementById('login-modal').style.display='flex'
 function closeLogin(){document.getElementById('login-modal').style.display='none';}
 function authBtnClick(){ if(isLoggedIn) doLogout(); else openLogin(); }
 
+let recoveryMode=false;
+function setRecoveryUI(on){
+  recoveryMode=on;
+  const er=document.getElementById('email-row');if(er)er.style.display=on?'none':'block';
+  const pl=document.getElementById('pass-label');if(pl)pl.textContent=on?'New password':'Password';
+  document.getElementById('login-btn').textContent=on?'Update password':(isSignup?'Create account':'Sign in');
+  const tm=document.getElementById('toggle-mode');if(tm)tm.style.display=on?'none':'block';
+  const fl=document.getElementById('forgot-link');if(fl)fl.style.display=on?'none':'block';
+  const h=document.querySelector('#login-modal h1');if(h)h.textContent=on?'🔑 Set a new password':'🔒 Sign in to edit';
+}
+function enterRecovery(){
+  openLogin();
+  document.getElementById('password').value='';
+  const err=document.getElementById('auth-err');err.style.display='none';
+  setRecoveryUI(true);
+}
+async function forgotPassword(){
+  const email=document.getElementById('email').value.trim();
+  const err=document.getElementById('auth-err');err.style.display='none';err.style.color='#dc2626';
+  if(!supa){err.textContent='Not connected yet — try again in a moment.';err.style.display='block';return;}
+  if(!email){err.textContent='Type your email above first, then tap “Forgot password”.';err.style.display='block';return;}
+  const {error}=await supa.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});
+  if(error){err.textContent=error.message;err.style.display='block';return;}
+  err.style.color='#16a34a';err.textContent='Reset link sent. Check '+email+', open the link on this device, then set a new password.';err.style.display='block';
+}
+async function updatePassword(){
+  const password=document.getElementById('password').value;
+  const err=document.getElementById('auth-err');err.style.display='none';err.style.color='#dc2626';
+  if(!password||password.length<6){err.textContent='Enter a new password (at least 6 characters)';err.style.display='block';return;}
+  const {error}=await supa.auth.updateUser({password});
+  if(error){err.textContent=error.message;err.style.display='block';return;}
+  const {data}=await supa.auth.getSession();
+  isLoggedIn=!!(data&&data.session);
+  userEmail=(data&&data.session&&data.session.user&&data.session.user.email)||userEmail;
+  document.getElementById('auth-btn').textContent='Sign out';
+  err.style.color='#16a34a';err.textContent='Password updated — you’re signed in.';err.style.display='block';
+  setTimeout(()=>{setRecoveryUI(false);closeLogin();loadPrivate();},1300);
+}
 async function doAuth(){
+  if(recoveryMode){return updatePassword();}
   const email=document.getElementById('email').value.trim();
   const password=document.getElementById('password').value;
   const err=document.getElementById('auth-err');err.style.display='none';
