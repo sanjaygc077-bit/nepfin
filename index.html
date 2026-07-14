@@ -4,7 +4,19 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>NEP Cali Manager</title>
+<meta name="apple-mobile-web-app-title" content="Nepcali FC">
+<meta name="application-name" content="Nepcali FC">
+<title>Nepcali FC</title>
+<meta name="description" content="Nepcali FC — Pride. Roots. Heritage. Est. 2015. Fixtures, roster, matchday live, RSVP and more.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Nepcali FC">
+<meta property="og:title" content="Nepcali FC">
+<meta property="og:description" content="Pride. Roots. Heritage. Est. 2015.">
+<meta property="og:image" content="https://sanjaygc077-bit.github.io/nepfin/club-banner.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Nepcali FC">
+<meta name="twitter:description" content="Pride. Roots. Heritage. Est. 2015.">
+<meta name="twitter:image" content="https://sanjaygc077-bit.github.io/nepfin/club-banner.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
@@ -865,6 +877,11 @@ tr:last-child td{border-bottom:none}
   </div>
 
   <div id="roster" class="sec">
+    <div class="card">
+      <div class="card-hd">Roster (<span id="roster-count">0</span>)</div>
+      <div class="muted" style="margin-bottom:10px">Tap a player to expand their photo &amp; rating card.</div>
+      <div id="roster-list"><div class="empty">Loading…</div></div>
+    </div>
     <div class="card" id="roster-add-card">
       <div class="card-hd">Add player</div>
       <label>Name</label>
@@ -875,10 +892,6 @@ tr:last-child td{border-bottom:none}
         <div><label>Jersey #</label><input id="p-jersey" type="number" min="1" max="99" placeholder="10"></div>
       </div>
       <button class="btn" onclick="addPlayer()">Add to roster</button>
-    </div>
-    <div class="card">
-      <div class="card-hd">Roster (<span id="roster-count">0</span>)</div>
-      <div id="roster-list"><div class="empty">Loading…</div></div>
     </div>
   </div>
 
