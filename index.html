@@ -465,15 +465,14 @@ tr:last-child td{border-bottom:none}
     <div class="cnav-crest">🏔️</div>
     <div class="cnav-name">Nepcali FC</div>
     <nav class="cnav-menu">
-      <a onclick="enterApp('tournament')">Cup</a>
-      <a onclick="enterApp('matchday')">Live</a>
-      <a onclick="enterApp('matches')">Matches</a>
-      <a onclick="enterApp('snaps')">Snaps</a>
-      <a onclick="enterApp('rsvp')">RSVP</a>
       <a onclick="enterApp('dashboard')">Dashboard</a>
+      <a onclick="enterApp('matches')">Matches</a>
+      <a onclick="enterApp('matchday')">Live</a>
+      <a onclick="enterApp('tournament')">Cup</a>
       <a onclick="enterApp('roster')">Roster</a>
+      <a onclick="enterApp('snaps')">Snaps</a>
     </nav>
-    <button class="cnav-login" onclick="enterApp('tournament')">Enter →</button>
+    <button class="cnav-login" onclick="enterApp('dashboard')">Enter →</button>
   </div>
 
   <section class="mu-hero">
@@ -484,7 +483,7 @@ tr:last-child td{border-bottom:none}
       <h1 class="mu-hero-title"><span class="flagfill">Pride.</span><br><span class="flagfill">Roots.</span><br><span class="flagfill">Heritage.</span></h1>
       <p class="mu-hero-sub">The home of our Nepali football family — live scores, the squad, matchday graphics, attendance and more.</p>
       <div class="mu-hero-actions">
-        <button class="hero-cta" onclick="enterApp('tournament')">Enter the club →</button>
+        <button class="hero-cta" onclick="enterApp('dashboard')">Enter the club →</button>
         <button class="hero-cta ghost" onclick="enterMatchday()">📢 Matchday Live</button>
       </div>
     </div>
@@ -493,6 +492,14 @@ tr:last-child td{border-bottom:none}
   <section class="mu-rail">
     <div class="mu-rail-hd"><span>Explore the club</span></div>
     <div class="mu-cards">
+      <div class="mu-card" onclick="enterApp('dashboard')">
+        <div class="mu-card-thumb">📊</div>
+        <div class="mu-card-body"><span class="mu-card-kicker">Overview</span><div class="mu-card-title">Dashboard</div><div class="mu-card-desc">Fixtures, events & club overview</div></div>
+      </div>
+      <div class="mu-card" onclick="enterApp('matches')">
+        <div class="mu-card-thumb">🆚</div>
+        <div class="mu-card-body"><span class="mu-card-kicker">Fixtures</span><div class="mu-card-title">Matches</div><div class="mu-card-desc">Nepcali FC vs other clubs — results & cards</div></div>
+      </div>
       <div class="mu-card live" onclick="enterMatchday()">
         <div class="mu-card-thumb">📢<span class="mu-live-dot">LIVE</span></div>
         <div class="mu-card-body"><span class="mu-card-kicker">Matchday</span><div class="mu-card-title">Matchday Live</div><div class="mu-card-desc">Live scoreboard & shareable graphics</div></div>
@@ -501,9 +508,13 @@ tr:last-child td{border-bottom:none}
         <div class="mu-card-thumb">🏆</div>
         <div class="mu-card-body"><span class="mu-card-kicker">Competition</span><div class="mu-card-title">Tournament Cup</div><div class="mu-card-desc">Scores, table, knockouts & top scorers</div></div>
       </div>
-      <div class="mu-card" onclick="enterApp('matches')">
-        <div class="mu-card-thumb">🆚</div>
-        <div class="mu-card-body"><span class="mu-card-kicker">Fixtures</span><div class="mu-card-title">Matches</div><div class="mu-card-desc">Nepcali FC vs other clubs — results & cards</div></div>
+      <div class="mu-card" onclick="enterApp('lineup')">
+        <div class="mu-card-thumb">⚽</div>
+        <div class="mu-card-body"><span class="mu-card-kicker">Tactics</span><div class="mu-card-title">Starting XI</div><div class="mu-card-desc">Pick the formation & lineup</div></div>
+      </div>
+      <div class="mu-card" onclick="enterApp('roster')">
+        <div class="mu-card-thumb">👥</div>
+        <div class="mu-card-body"><span class="mu-card-kicker">Squad</span><div class="mu-card-title">Roster</div><div class="mu-card-desc">Players & squads</div></div>
       </div>
       <div class="mu-card" onclick="enterApp('snaps')">
         <div class="mu-card-thumb">📸</div>
@@ -512,18 +523,6 @@ tr:last-child td{border-bottom:none}
       <div class="mu-card" onclick="enterApp('rsvp')">
         <div class="mu-card-thumb">🗳️</div>
         <div class="mu-card-body"><span class="mu-card-kicker">Attendance</span><div class="mu-card-title">RSVP</div><div class="mu-card-desc">Who's in — with guests counted</div></div>
-      </div>
-      <div class="mu-card" onclick="enterApp('dashboard')">
-        <div class="mu-card-thumb">📊</div>
-        <div class="mu-card-body"><span class="mu-card-kicker">Overview</span><div class="mu-card-title">Dashboard</div><div class="mu-card-desc">Fixtures, events & club overview</div></div>
-      </div>
-      <div class="mu-card" onclick="enterApp('lineup')">
-        <div class="mu-card-thumb">⚽</div>
-        <div class="mu-card-body"><span class="mu-card-kicker">Tactics</span><div class="mu-card-title">Starting XI</div><div class="mu-card-desc">Pick the formation & lineup</div></div>
-      </div>
-      <div class="mu-card" onclick="enterApp('roster')">
-        <div class="mu-card-thumb">👥</div>
-        <div class="mu-card-body"><span class="mu-card-kicker">Squad</span><div class="mu-card-title">Roster</div><div class="mu-card-desc">Players & squads</div></div>
       </div>
       <div class="mu-card" onclick="enterApp('money')">
         <div class="mu-card-thumb">💰</div>
@@ -570,15 +569,15 @@ tr:last-child td{border-bottom:none}
       <div class="sb-brand-txt"><span class="sb-brand-name">Nepcali FC</span><span class="sb-brand-sub">Football Club</span></div>
     </div>
     <nav class="nav sb-nav">
-      <button class="nav-btn on" onclick="show('tournament',this)"><i>🏆</i>Cup</button>
-      <button class="nav-btn" onclick="show('matchday',this)"><i>📢</i>Live</button>
-      <button class="nav-btn" onclick="show('matches',this)"><i>🆚</i>Matches</button>
-      <button class="nav-btn" onclick="show('snaps',this)"><i>📸</i>Snaps</button>
-      <button class="nav-btn" onclick="show('rsvp',this)"><i>🗳️</i>RSVP</button>
-      <button class="nav-btn" onclick="show('dashboard',this)"><i>📊</i>Dashboard</button>
-      <button class="nav-btn" onclick="show('lineup',this)"><i>⚽</i>Starting XI</button>
-      <button class="nav-btn" onclick="show('roster',this)"><i>👥</i>Roster</button>
-      <button class="nav-btn" onclick="gatedShow('money',this)"><i>💰</i>Money</button>
+      <button class="nav-btn on" data-tab="dashboard" onclick="show('dashboard',this)"><i>📊</i>Dashboard</button>
+      <button class="nav-btn" data-tab="matches" onclick="show('matches',this)"><i>🆚</i>Matches</button>
+      <button class="nav-btn" data-tab="matchday" onclick="show('matchday',this)"><i>📢</i>Live</button>
+      <button class="nav-btn" data-tab="tournament" onclick="show('tournament',this)"><i>🏆</i>Cup</button>
+      <button class="nav-btn" data-tab="lineup" onclick="show('lineup',this)"><i>⚽</i>Starting XI</button>
+      <button class="nav-btn" data-tab="roster" onclick="show('roster',this)"><i>👥</i>Roster</button>
+      <button class="nav-btn" data-tab="snaps" onclick="show('snaps',this)"><i>📸</i>Snaps</button>
+      <button class="nav-btn" data-tab="rsvp" onclick="show('rsvp',this)"><i>🗳️</i>RSVP</button>
+      <button class="nav-btn" data-tab="money" onclick="gatedShow('money',this)"><i>💰</i>Money</button>
     </nav>
     <div class="sb-foot">
       <button class="home-btn" onclick="goHome()">⌂ Home</button>
@@ -674,7 +673,7 @@ tr:last-child td{border-bottom:none}
         </select>
         <div class="md-row2" style="margin-top:10px">
           <button class="btn" onclick="createMatch()">Save match</button>
-          <button class="btn" style="background:var(--panel)" onclick="show('matchday',document.querySelectorAll('.nav-btn')[1])">📢 Build in Live (events)</button>
+          <button class="btn" style="background:var(--panel)" onclick="show('matchday',document.querySelector('.nav-btn[data-tab=&quot;matchday&quot;]'))">📢 Build in Live (events)</button>
         </div>
       </div>
     </div>
@@ -701,7 +700,7 @@ tr:last-child td{border-bottom:none}
     <div id="snaps-grid"><div class="empty">Loading…</div></div>
   </div>
 
-  <div id="dashboard" class="sec">
+  <div id="dashboard" class="sec on">
     <div class="card">
       <div class="card-hd">Overview</div>
       <div class="stat-grid">
@@ -810,7 +809,7 @@ tr:last-child td{border-bottom:none}
     </div>
   </div>
 
-  <div id="tournament" class="sec on">
+  <div id="tournament" class="sec">
     <div class="subnav" style="grid-template-columns:repeat(5,1fr)">
       <button class="subnav-btn on" onclick="subshow('t-scores',this)">Scores</button>
       <button class="subnav-btn" onclick="subshow('t-table',this)">Table</button>
@@ -2430,8 +2429,7 @@ function enterApp(tabId){
   document.getElementById('app').style.display='block';
   window.scrollTo(0,0);
   if(tabId){
-    const map={tournament:0,matchday:1,matches:2,snaps:3,rsvp:4,dashboard:5,lineup:6,roster:7,money:8};
-    const btn=document.querySelectorAll('.nav-btn')[map[tabId]];
+    const btn=document.querySelector('.nav-btn[data-tab="'+tabId+'"]');
     if(btn)btn.click();
   }
   // On phones, reveal the left nav/branding drawer on entry instead of dropping
