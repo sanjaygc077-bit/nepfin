@@ -1297,11 +1297,17 @@ async function loadSnaps(){
 }
 function snapCardHTML(s){
   const cap=s.caption?`<div class="snap-cap">${escAttr(s.caption)}</div>`:'';
-  const media=(s.type==='video')
-    ? `<video src="${escAttr(s.url)}" controls preload="metadata" playsinline></video>`
-    : `<img src="${escAttr(s.url)}" loading="lazy" alt="${escAttr(s.caption||'snap')}">`;
-  return `<div class="snap">
+  const isImg=s.type!=='video';
+  const media=isImg
+    ? `<img src="${escAttr(s.url)}" loading="lazy" alt="${escAttr(s.caption||'snap')}">`
+    : `<video src="${escAttr(s.url)}" controls preload="metadata" playsinline></video>`;
+  const feat=isImg&&isHeroSnap(s.id);
+  const featBtn=isImg
+    ? `<button class="snap-feat${feat?' on':''}" onclick="toggleHeroSnap('${s.id}')" title="${feat?'Showing on the home background — tap to remove':'Feature this photo on the home background'}">${feat?'★ On home':'☆ Home'}</button>`
+    : '';
+  return `<div class="snap${feat?' featured':''}">
     <div class="snap-media">${media}</div>
+    ${featBtn}
     ${cap}
     <button class="snap-del" onclick="deleteSnap('${s.id}','${escAttr(s.path||'')}')" title="Remove">🗑</button>
   </div>`;
@@ -1318,11 +1324,29 @@ function renderSnaps(){
 // ---- Club Preview — dreamy landing-page slideshow of recent snaps ----------
 let previewIndex=0,previewTimer=null;
 function previewList(){return snaps.slice(0,12);}   // most-recent snaps
-// ---- Hero background slideshow (banner first, then Snaps photos) -----------
+// ---- Hero background slideshow (banner first, then hand-picked Snaps) ------
+// Only photos the user explicitly features appear behind the home headline.
 let heroIndex=0,heroTimer=null;
+const HERO_MAX=20;
+function heroSnapIds(){return Array.isArray(_settings.hero_snaps)?_settings.hero_snaps:[];}
+function isHeroSnap(id){return heroSnapIds().includes(id);}
+function toggleHeroSnap(id){
+  let arr=heroSnapIds().slice();
+  if(arr.includes(id)){arr=arr.filter(x=>x!==id);}
+  else{
+    if(arr.length>=HERO_MAX){alert('You can feature up to '+HERO_MAX+' photos on the home background. Remove one first.');return;}
+    arr.push(id);
+  }
+  _settings.hero_snaps=arr;
+  saveSettings();
+  renderSnaps();   // refreshes the grid buttons + preview + hero background
+}
 function heroImages(){
   const imgs=['club-banner.png'];                       // existing banner always first
-  snaps.filter(s=>s&&s.type!=='video'&&s.url).slice(0,10).forEach(s=>imgs.push(s.url));
+  heroSnapIds().forEach(id=>{
+    const s=snaps.find(x=>x&&x.id===id&&x.type!=='video'&&x.url);
+    if(s)imgs.push(s.url);
+  });
   return imgs;
 }
 function renderHeroBg(){
