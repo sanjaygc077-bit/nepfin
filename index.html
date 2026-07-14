@@ -20,6 +20,11 @@
   --head:'Oswald',-apple-system,BlinkMacSystemFont,sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+/* Mobile hardening: stop iOS auto-inflating text (looks "zoomed"), and never
+   let a stray wide element create horizontal scroll / shrink-to-fit. */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+html,body{max-width:100%;overflow-x:clip}
+img,video,canvas{max-width:100%;height:auto}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--txt);background-image:radial-gradient(circle at 1px 1px,rgba(212,175,55,.05) 1px,transparent 0);background-size:26px 26px}
 .wrap{max-width:560px;margin:0 auto;padding:14px}
 header{background:linear-gradient(135deg,var(--panel2),var(--panel));border-radius:12px;padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;gap:11px;border:1px solid var(--line);border-bottom:3px solid var(--crimson)}
@@ -38,8 +43,10 @@ header h1{font-family:var(--head);font-size:19px;font-weight:700;letter-spacing:
 .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:11px}
 .card-hd{font-family:var(--head);font-size:16px;font-weight:700;margin-bottom:13px;color:#fff;letter-spacing:.05em;text-transform:uppercase;line-height:1.1;padding-left:11px;border-left:4px solid var(--crimson)}
 label{display:block;font-size:11px;color:var(--gold-l);margin-bottom:5px;text-transform:uppercase;letter-spacing:.06em;font-weight:600}
-input,select{width:100%;padding:11px 11px;border:1px solid var(--line);border-radius:9px;background:var(--field);color:var(--txt);font-size:15px;outline:none;margin-bottom:11px}
+input,select{width:100%;min-width:0;padding:11px 11px;border:1px solid var(--line);border-radius:9px;background:var(--field);color:var(--txt);font-size:16px;outline:none;margin-bottom:11px}
 input:focus,select:focus{border-color:var(--gold)}
+/* Keep every field ≥16px on phones so iOS Safari never auto-zooms on focus. */
+@media(max-width:680px){input,select,textarea,.team-sel,.name-inp{font-size:16px}}
 input::placeholder{color:var(--muted2)}
 select option{background:#0b1830;color:var(--txt)}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:11px}
