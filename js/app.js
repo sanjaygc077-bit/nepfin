@@ -1736,21 +1736,11 @@ async function deleteHistory(id){
 function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sb-scrim').classList.toggle('show');}
 function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sb-scrim').classList.remove('show');}
 function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('sb-scrim').classList.add('show');}
-// ---- Section navigation history (for the top-bar back arrow) ----
-let _navStack=[],_navBack=false;
-function updateBackBtn(){const el=document.getElementById('top-back');if(el)el.style.display=_navStack.length?'inline-flex':'none';}
-function goBack(){
-  if(_navStack.length){
-    const prev=_navStack.pop();
-    _navBack=true;
-    const b=document.querySelector('.nav-btn[data-tab="'+prev+'"]');
-    if(b)b.click(); else _navBack=false;
-  }else{goHome();}
-}
+// ---- Top-bar back arrow: reveal the feature menu (sidebar drawer) ----
+// Users wanted "back" to bring up the list of sections, not step through
+// history — so this simply re-opens the nav drawer.
+function goBack(){openSidebar();}
 function show(id,btn){
-  const cur=document.querySelector('.sec.on');
-  if(!_navBack && cur && cur.id!==id)_navStack.push(cur.id);
-  _navBack=false;
   document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('on'));
   document.getElementById(id).classList.add('on');btn.classList.add('on');
@@ -1761,7 +1751,6 @@ function show(id,btn){
   if(id==='rsvp')loadPolls();
   if(id==='dashboard')renderDashboard();
   if(window.innerWidth<900)closeSidebar();
-  updateBackBtn();
   const mi=document.querySelector('.main-inner');if(mi)mi.scrollTop=0;
   window.scrollTo(0,0);
 }
@@ -1808,13 +1797,11 @@ async function renderUsage(){
 }
 
 function goHome(){
-  _navStack=[];updateBackBtn();
   document.getElementById('app').style.display='none';
   document.getElementById('welcome').style.display='flex';
   window.scrollTo(0,0);
 }
 function enterApp(tabId){
-  _navStack=[];
   document.getElementById('welcome').style.display='none';
   document.getElementById('app').style.display='block';
   window.scrollTo(0,0);

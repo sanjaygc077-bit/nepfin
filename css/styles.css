@@ -172,10 +172,9 @@ tr:last-child td{border-bottom:none}
 .sb-foot .home-btn,.sb-foot .logout{margin:0;width:100%;text-align:center}
 .main{min-height:100vh}
 .main-top{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:12px;padding:11px 16px;background:var(--chrome);border-bottom:3px solid var(--crimson)}
-.top-back{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;background:none;border:1px solid var(--chrome-line);color:#fff;font-size:20px;width:38px;height:36px;border-radius:8px;cursor:pointer;line-height:1}
-.top-back:hover{border-color:var(--gold-l);color:var(--gold-l)}
-.top-back:active{transform:scale(.95)}
-.sb-toggle{display:inline-flex;align-items:center;gap:7px;background:none;border:1px solid var(--chrome-line);color:var(--gold-l);font-size:18px;padding:6px 12px;border-radius:8px;cursor:pointer;line-height:1}
+.sb-toggle{display:inline-flex;align-items:center;gap:7px;background:none;border:1px solid var(--chrome-line);color:var(--gold-l);font-size:16px;padding:8px 13px;border-radius:8px;cursor:pointer;line-height:1}
+.sb-toggle .tb-arrow{font-size:18px;line-height:1}
+.sb-toggle:active{transform:scale(.97)}
 .sb-toggle-txt{font-family:var(--head);font-weight:700;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
 .main-top-brand{display:flex;align-items:center;gap:8px;font-family:var(--head);font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#fff;font-size:16px;cursor:pointer;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .main-top-brand .cnav-crest{flex-shrink:0}
