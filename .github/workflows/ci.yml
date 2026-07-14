@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  lint:
+    name: Lint & sanity checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: JavaScript syntax check
+        run: |
+          node --check config.js
+          node --check js/app.js
+
+      - name: index.html wires up external assets
+        run: |
+          grep -q 'css/styles.css' index.html
+          grep -q 'js/app.js' index.html
+          echo "index.html references css/styles.css and js/app.js ✔"
