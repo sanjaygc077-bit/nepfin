@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=12">
+<link rel="stylesheet" href="css/styles.css?v=14">
 </head>
 <body>
 
@@ -230,7 +230,7 @@
       <button class="btn" onclick="shareCustom()">📤 Share</button>
     </div>
     <button class="btn" style="margin-top:10px;background:linear-gradient(135deg,var(--gold),#b8902b);color:#1a1205" onclick="saveCustomToHistory()">🆚 Save to Matches</button>
-    <button class="btn" style="margin-top:8px;background:var(--panel)" onclick="cmReset()">🆕 New match (clear form)</button>
+    <button class="btn light" style="margin-top:8px" onclick="cmReset()">🆕 New match (clear form)</button>
 
     <div class="card" style="margin-top:16px">
       <button class="btn edit-toggle" onclick="toggleEdit('cm-details',this)">⚙️ Match details <span class="tg-arrow">▾</span></button>
@@ -292,7 +292,7 @@
         </select>
         <div class="md-row2" style="margin-top:10px">
           <button class="btn" onclick="createMatch()">Save match</button>
-          <button class="btn" style="background:var(--panel)" onclick="show('matchday',document.querySelector('.nav-btn[data-tab=&quot;matchday&quot;]'))">📢 Build in Live (events)</button>
+          <button class="btn light" onclick="show('matchday',document.querySelector('.nav-btn[data-tab=&quot;matchday&quot;]'))">📢 Build in Live (events)</button>
         </div>
       </div>
     </div>
@@ -313,7 +313,7 @@
         <div class="muted" style="margin:14px 0 6px;border-top:1px solid var(--line);padding-top:12px">…or add by link</div>
         <label>Photo / video URL</label>
         <input id="snap-url" type="text" placeholder="https://…">
-        <button class="btn" style="background:var(--panel)" onclick="addSnapUrl()">Add link</button>
+        <button class="btn light" onclick="addSnapUrl()">Add link</button>
       </div>
     </div>
     <div class="muted" style="margin:4px 2px 12px">Tap <b>☆ Home</b> on any photo to feature it in the home-page background slideshow (up to 20). The club banner always shows first.</div>

@@ -482,8 +482,12 @@ tr:last-child td{border-bottom:none}
 .match-full{margin:10px auto 0;max-width:560px}
 .match-full .md-card{margin:0}
 #cm-preview .md-card{margin:0 auto}
-.edit-toggle{width:100%;display:flex;justify-content:space-between;align-items:center;background:var(--panel)}
-.edit-toggle .tg-arrow{font-size:12px;opacity:.7}
+.edit-toggle{width:100%;display:flex;justify-content:space-between;align-items:center;background:var(--panel);color:var(--ink);border:1px solid var(--line2);box-shadow:var(--sh-sm)}
+.edit-toggle:hover{filter:none;background:var(--panel2)}
+.edit-toggle .tg-arrow{font-size:12px;opacity:.7;color:var(--muted)}
+/* Light variant of .btn (dark text on a white/panel surface) */
+.btn.light{background:var(--panel);color:var(--ink);border:1px solid var(--line2);box-shadow:var(--sh-sm)}
+.btn.light:hover{filter:none;background:var(--panel2)}
 /* Results + Club Preview split */
 .mu-split{max-width:1160px;margin:0 auto;padding:22px 22px 10px;background:var(--bg);display:grid;grid-template-columns:1fr;gap:26px}
 .mu-split .mu-results,.mu-split .mu-preview{max-width:none;margin:0;padding:0}
@@ -548,7 +552,7 @@ tr:last-child td{border-bottom:none}
 .mu-stats-inner{max-width:1160px;margin:0 auto;padding:22px;display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
 .stat-cell{text-align:center;position:relative}
 .stat-cell:not(:last-child)::after{content:'';position:absolute;right:0;top:18%;height:64%;width:1px;background:rgba(255,255,255,.1)}
-.stat-num{display:block;font-family:var(--display);font-weight:400;font-size:clamp(30px,6vw,52px);line-height:1;color:#fff;letter-spacing:.01em}
+.stat-num{display:block;font-family:var(--display);font-weight:400;font-size:clamp(24px,4.2vw,38px);line-height:1;color:#fff;letter-spacing:.01em}
 .stat-cap{display:block;margin-top:6px;font-family:var(--head);font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-l)}
 @media(min-width:900px){.mu-stats-inner{padding:30px 44px}}
 
