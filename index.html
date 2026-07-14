@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=14">
+<link rel="stylesheet" href="css/styles.css?v=15">
 </head>
 <body>
 
@@ -205,8 +205,9 @@
   </aside>
   <main class="main">
     <div class="main-top">
-      <button class="sb-toggle" onclick="toggleSidebar()" aria-label="Menu">☰</button>
-      <div class="main-top-brand"><span class="cnav-crest" style="width:30px;height:30px"><img src="crest.png?v=1" alt="crest"></span> Nepcali FC</div>
+      <button class="sb-toggle" onclick="toggleSidebar()" aria-label="Open menu">☰ <span class="sb-toggle-txt">Menu</span></button>
+      <div class="main-top-brand" onclick="goHome()" title="Back to home"><span class="cnav-crest" style="width:30px;height:30px"><img src="crest.png?v=1" alt="crest"></span> Nepcali FC</div>
+      <button class="top-home" onclick="goHome()" aria-label="Back to home">⌂ Home</button>
     </div>
     <div class="main-inner">
 
