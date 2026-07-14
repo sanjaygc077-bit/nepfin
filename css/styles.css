@@ -526,3 +526,70 @@ tr:last-child td{border-bottom:none}
   .mu-rail-hd{font-size:36px;padding:0 44px}
   .mu-cards{padding:4px 44px 26px}
 }
+
+/* ============================================================
+   ALIVENESS — live strip, stat band, scroll-reveal, activity,
+   timestamps, micro-interactions
+   ============================================================ */
+
+/* --- Live match takeover strip (top of landing) --- */
+.live-strip{display:flex;align-items:center;justify-content:center;gap:12px;padding:11px 16px;background:var(--crimson);text-decoration:none;cursor:pointer;overflow:hidden;position:relative}
+.live-strip::before{content:'';position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.22) 50%,transparent 70%);transform:translateX(-100%);animation:liveSheen 3.4s ease-in-out infinite}
+.live-strip-dot{position:relative;background:#fff;color:var(--crimson);font-family:var(--head);font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:3px 9px;border-radius:4px}
+.live-strip-dot::after{content:'';position:absolute;top:-3px;right:-3px;width:8px;height:8px;border-radius:50%;background:#fff;box-shadow:0 0 0 0 rgba(255,255,255,.9);animation:livePulse 1.4s ease-out infinite}
+.live-strip-txt{position:relative;color:#fff;font-family:var(--head);font-weight:600;font-size:14px;letter-spacing:.02em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:70vw}
+.live-strip-cta{position:relative;color:#fff;font-family:var(--head);font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;opacity:.9;flex-shrink:0}
+.live-strip:hover .live-strip-cta{opacity:1}
+@keyframes liveSheen{0%{transform:translateX(-100%)}55%,100%{transform:translateX(100%)}}
+@keyframes livePulse{0%{box-shadow:0 0 0 0 rgba(255,255,255,.85)}70%{box-shadow:0 0 0 9px rgba(255,255,255,0)}100%{box-shadow:0 0 0 0 rgba(255,255,255,0)}}
+
+/* --- Club-at-a-glance stat band --- */
+.mu-stats{background:var(--chrome);border-top:3px solid var(--crimson)}
+.mu-stats-inner{max-width:1160px;margin:0 auto;padding:22px;display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.stat-cell{text-align:center;position:relative}
+.stat-cell:not(:last-child)::after{content:'';position:absolute;right:0;top:18%;height:64%;width:1px;background:rgba(255,255,255,.1)}
+.stat-num{display:block;font-family:var(--display);font-weight:400;font-size:clamp(30px,6vw,52px);line-height:1;color:#fff;letter-spacing:.01em}
+.stat-cap{display:block;margin-top:6px;font-family:var(--head);font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-l)}
+@media(min-width:900px){.mu-stats-inner{padding:30px 44px}}
+
+/* --- Scroll reveal --- */
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .7s cubic-bezier(.22,.61,.36,1),transform .7s cubic-bezier(.22,.61,.36,1)}
+.reveal.in{opacity:1;transform:none}
+
+/* --- Recent activity feed (dashboard) --- */
+.dash-activity-card{grid-column:1/-1}
+.act-list{display:flex;flex-direction:column}
+.act-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.act-item:last-child{border-bottom:none}
+.act-ic{flex-shrink:0;width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;background:var(--bg2);border:1px solid var(--line)}
+.act-ic.match{background:rgba(192,57,43,.1);border-color:rgba(192,57,43,.25)}
+.act-ic.snap{background:rgba(207,154,52,.14);border-color:rgba(207,154,52,.3)}
+.act-ic.rsvp{background:rgba(18,133,95,.12);border-color:rgba(18,133,95,.28)}
+.act-ic.event{background:var(--bg2)}
+.act-main{flex:1;min-width:0}
+.act-txt{font-size:13px;color:var(--ink);line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.act-txt b{font-weight:700}
+.act-ago{font-family:var(--head);font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted2);flex-shrink:0}
+.act-item:hover .act-txt{color:var(--crimson)}
+
+/* --- Relative timestamp chip --- */
+.time-ago{display:inline-block;font-family:var(--head);font-size:9px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted2);margin-left:6px}
+.snap-when{position:absolute;bottom:6px;left:6px;background:rgba(0,0,0,.6);color:#fff;font-family:var(--head);font-size:9px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:3px 7px;border-radius:6px}
+
+/* --- Micro-interactions --- */
+.cnav-menu a{position:relative;padding-bottom:3px}
+.cnav-menu a::after{content:'';position:absolute;left:0;bottom:0;width:100%;height:2px;background:var(--gold-l);transform:scaleX(0);transform-origin:left;transition:transform .22s ease}
+.cnav-menu a:hover::after{transform:scaleX(1)}
+.cnav-login,.hero-cta,.btn,.dash-act{position:relative;overflow:hidden}
+.cnav-login:active,.dash-act:active{transform:scale(.97)}
+.ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.45);transform:scale(0);animation:ripple .55s ease-out;pointer-events:none}
+@keyframes ripple{to{transform:scale(2.4);opacity:0}}
+.mu-card{transform-style:preserve-3d;will-change:transform}
+.mu-card .mu-card-thumb svg{transition:transform .25s ease}
+.mu-card:hover .mu-card-thumb svg{transform:scale(1.08)}
+
+@media(prefers-reduced-motion:reduce){
+  .reveal{opacity:1;transform:none;transition:none}
+  .live-strip::before,.live-strip-dot::after,.hero-slide.on,.pv-slide.on img.pv-media,.news-marquee{animation:none!important}
+  .ripple{display:none}
+}

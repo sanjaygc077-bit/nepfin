@@ -351,6 +351,28 @@ async function saveSettings(){
 
 function fmtDate(d){if(!d)return'';try{return new Date(d+'T00:00:00').toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric',year:'numeric'});}catch(e){return d;}}
 function firstName(n){return (n||'').trim().split(/\s+/)[0]||'';}
+const REDUCE=!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches);
+// "2h ago" style relative time from an ISO timestamp.
+function timeAgo(iso){
+  if(!iso)return'';
+  const t=new Date(iso).getTime();if(isNaN(t))return'';
+  const s=Math.max(0,Math.floor((Date.now()-t)/1000));
+  if(s<60)return'just now';
+  const m=Math.floor(s/60);if(m<60)return m+'m ago';
+  const h=Math.floor(m/60);if(h<24)return h+'h ago';
+  const d=Math.floor(h/24);if(d<7)return d+'d ago';
+  const w=Math.floor(d/7);if(w<5)return w+'w ago';
+  const mo=Math.floor(d/30);if(mo<12)return mo+'mo ago';
+  return Math.floor(d/365)+'y ago';
+}
+// Count-up animation on an arbitrary element to an integer target.
+function countUp(el,to){
+  if(!el)return;to=to||0;
+  const from=parseInt((el.textContent||'').replace(/\D/g,''),10)||0;
+  if(REDUCE||from===to){el.textContent=to;return;}
+  const steps=Math.min(28,Math.max(1,Math.abs(to-from)));let i=0;clearInterval(el._cu);
+  el._cu=setInterval(()=>{i++;el.textContent=Math.round(from+(to-from)*(i/steps));if(i>=steps){clearInterval(el._cu);el.textContent=to;}},24);
+}
 
 function renderDashboardExtras(){
   const t=_settings.next_tournament||{};
@@ -396,6 +418,9 @@ function renderDashboard(){
   renderMoneyStats(_players,_payments);
   renderDashLatest();
   renderDashRSVP();
+  renderActivity();
+  updateWelcomeStats();
+  renderLiveStrip();
 }
 function renderDashRSVP(){
   const el=document.getElementById('d-rsvp');if(!el)return;
@@ -696,7 +721,7 @@ function renderMoneyStats(players,payments){
 
 function isPlayed(m){return m.home_goals!==null&&m.away_goals!==null&&m.home_goals!==undefined&&m.away_goals!==undefined;}
 
-function renderTournament(){renderSetup();renderMatches();renderTable();renderMatchday();renderResults();}
+function renderTournament(){renderSetup();renderMatches();renderTable();renderMatchday();renderResults();updateWelcomeStats();renderLiveStrip();}
 
 function renderSetup(){
   const cg=document.getElementById('t-count-grid');
@@ -1120,7 +1145,7 @@ function cmModel(){
   if(!_settings.custom_match.events)_settings.custom_match.events=[];
   return _settings.custom_match;
 }
-function cmRenderPreview(){const el=document.getElementById('cm-preview');if(el)el.innerHTML=mdPreviewHTML(mdNormCustom());}
+function cmRenderPreview(){const el=document.getElementById('cm-preview');if(el)el.innerHTML=mdPreviewHTML(mdNormCustom());renderLiveStrip();}
 function cmSet(f,v){cmModel()[f]=v;saveSettings();cmRenderPreview();}
 function cmSetEvent(i,f,v){const e=cmModel().events[i];if(!e)return;e[f]=v;saveSettings();cmRenderPreview();}
 function cmAddEvent(){cmModel().events.push({side:'home',type:'goal',text:''});saveSettings();cmRenderEvents();cmRenderPreview();}
@@ -1191,7 +1216,7 @@ function matchRow(row,pfx){
         <span class="ms-score">${score}</span>
         <span class="ms-team a">${escAttr(d.away||'Away')}</span>
       </div>
-      <div class="ms-toggle" id="mt-${key}">▾ Match center</div>
+      <div class="ms-toggle" id="mt-${key}">▾ Match center${row.created_at?`<span class="time-ago">${timeAgo(row.created_at)}</span>`:''}</div>
     </div>
     <div class="match-full" id="mf-${key}" style="display:none">
       ${mdPreviewHTML(d)}
@@ -1220,6 +1245,9 @@ function renderResults(){
   if(rest.length){rw.style.display='block';document.getElementById('recent-matches').innerHTML=rest.map(r=>matchRow(r,'h-')).join('');}
   else if(rw)rw.style.display='none';
   renderDashLatest();
+  updateWelcomeStats();
+  renderLiveStrip();
+  renderActivity();
 }
 function toggleNewMatch(){
   const f=document.getElementById('nm-form');const b=document.getElementById('nm-open');
@@ -1309,8 +1337,9 @@ function snapCardHTML(s){
   const featBtn=isImg
     ? `<button class="snap-feat${feat?' on':''}" onclick="toggleHeroSnap('${s.id}')" title="${feat?'Showing on the home background — tap to remove':'Feature this photo on the home background'}">${feat?'★ On home':'☆ Home'}</button>`
     : '';
+  const when=s.created_at?`<span class="snap-when">${timeAgo(s.created_at)}</span>`:'';
   return `<div class="snap${feat?' featured':''}">
-    <div class="snap-media">${media}</div>
+    <div class="snap-media">${media}${when}</div>
     ${featBtn}
     ${cap}
     <button class="snap-del" onclick="deleteSnap('${s.id}','${escAttr(s.path||'')}')" title="Remove">🗑</button>
@@ -1323,6 +1352,8 @@ function renderSnaps(){
   }
   renderPreview();
   renderDashLatest();
+  updateWelcomeStats();
+  renderActivity();
 }
 
 // ---- Club Preview — dreamy landing-page slideshow of recent snaps ----------
@@ -1780,7 +1811,64 @@ function enterApp(tabId){
 }
 
 function enterMatchday(){enterApp('matchday');}
-function updateWelcomeStats(){}
+
+// ---- Aliveness: stat band, live strip, activity feed ----------------------
+function statTargets(){
+  const played=(typeof tMatches!=='undefined'?tMatches:[]).filter(m=>{try{return isPlayed(m);}catch(e){return false;}}).length;
+  const ext=(typeof extResults!=='undefined'?extResults:[]);
+  const extGoals=ext.reduce((n,r)=>{const d=r.data||{};return n+(Number(d.hs)||0)+(Number(d.as)||0);},0);
+  return {
+    players:(_players||[]).length,
+    matches:ext.length+played,
+    goals:extGoals+((typeof tGoals!=='undefined'?tGoals:[]).length),
+    snaps:(typeof snaps!=='undefined'?snaps:[]).length
+  };
+}
+function animateStatBand(){
+  ['stat-players','stat-matches','stat-goals','stat-snaps'].forEach(id=>{const el=document.getElementById(id);if(el)countUp(el,parseInt(el.dataset.count,10)||0);});
+}
+function updateWelcomeStats(){
+  const t=statTargets();
+  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.dataset.count=v;};
+  set('stat-players',t.players);set('stat-matches',t.matches);set('stat-goals',t.goals);set('stat-snaps',t.snaps);
+  const band=document.getElementById('mu-stats');
+  if(band&&(band.classList.contains('in')||REDUCE))animateStatBand();
+}
+// The single match currently in a LIVE state (custom editor wins, then Cup, then saved).
+function liveMatchInfo(){
+  const c=_settings&&_settings.custom_match;
+  if(c&&c.status==='live'&&(((c.home||'').trim())||((c.away||'').trim())))
+    return {home:c.home||'Home',away:c.away||'Away',hs:Number(c.hs)||0,as:Number(c.as)||0};
+  if(typeof tMatches!=='undefined'){
+    const m=tMatches.find(x=>{try{return mdStatusOf(x)==='live';}catch(e){return false;}});
+    if(m){const sc=mdScore(m);return {home:teamName(m.home_team),away:teamName(m.away_team),hs:sc[0],as:sc[1]};}
+  }
+  if(typeof extResults!=='undefined'){
+    const r=extResults.find(x=>(x.data||{}).status==='live');
+    if(r){const d=r.data;return {home:d.home||'Home',away:d.away||'Away',hs:Number(d.hs)||0,as:Number(d.as)||0};}
+  }
+  return null;
+}
+function renderLiveStrip(){
+  const el=document.getElementById('live-strip');if(!el)return;
+  const info=liveMatchInfo();
+  if(!info){el.style.display='none';return;}
+  const txt=document.getElementById('live-strip-txt');
+  if(txt)txt.textContent=`${info.home} ${info.hs}\u2013${info.as} ${info.away}`;
+  el.style.display='flex';
+}
+function renderActivity(){
+  const el=document.getElementById('d-activity');if(!el)return;
+  const NAV=t=>`show('${t}',document.querySelector('.nav-btn[data-tab=&quot;${t}&quot;]'))`;
+  const items=[];
+  (typeof extResults!=='undefined'?extResults:[]).forEach(r=>{const d=r.data||{};const sc=d.status==='up'?'vs':((d.hs==null?0:d.hs)+'\u2013'+(d.as==null?0:d.as));items.push({t:r.created_at,ic:'\u{1F19A}',cls:'match',html:`Match saved \u00b7 <b>${escAttr(d.home||'Home')} ${sc} ${escAttr(d.away||'Away')}</b>`,go:NAV('matches')});});
+  (typeof snaps!=='undefined'?snaps:[]).forEach(s=>{items.push({t:s.created_at,ic:s.type==='video'?'\u{1F3AC}':'\u{1F4F8}',cls:'snap',html:`New ${s.type==='video'?'video':'photo'} added${s.caption?' \u00b7 <b>'+escAttr(s.caption)+'</b>':''}`,go:NAV('snaps')});});
+  (typeof polls!=='undefined'?polls:[]).forEach(p=>{const tal=(typeof pollTally==='function')?pollTally(p.id):{total:0};items.push({t:p.created_at,ic:'\u{1F5F3}\uFE0F',cls:'rsvp',html:`RSVP \u00b7 <b>${escAttr(p.question)}</b> \u00b7 ${tal.total} going`,go:NAV('rsvp')});});
+  items.sort((a,b)=>new Date(b.t||0)-new Date(a.t||0));
+  const top=items.filter(i=>i.t).slice(0,6);
+  if(!top.length){el.innerHTML='<div class="empty">Nothing yet — add a match, snap or poll.</div>';return;}
+  el.innerHTML='<div class="act-list">'+top.map(i=>`<div class="act-item" onclick="${i.go}"><span class="act-ic ${i.cls}">${i.ic}</span><div class="act-main"><div class="act-txt">${i.html}</div></div><span class="act-ago">${timeAgo(i.t)}</span></div>`).join('')+'</div>';
+}
 function subshow(id,btn){
   document.querySelectorAll('.subsec').forEach(s=>s.classList.remove('on'));
   document.querySelectorAll('.subnav-btn').forEach(b=>b.classList.remove('on'));
@@ -1800,4 +1888,56 @@ if(initSupabase()){
   const map={dash:'dashboard',dashboard:'dashboard',cup:'tournament',tournament:'tournament',xi:'lineup',lineup:'lineup',roster:'roster',money:'money',rsvp:'rsvp',live:'matchday',matchday:'matchday'};
   const tab=map[(location.hash||'').replace('#','').toLowerCase()];
   if(tab)enterApp(tab);
+})();
+
+// ---- Aliveness wiring: scroll-reveal, micro-interactions, live refresh ----
+(function(){
+  // Scroll-reveal: fade/slide sections in as they enter the viewport.
+  const reveals=document.querySelectorAll('.reveal');
+  if(REDUCE||!('IntersectionObserver'in window)){
+    reveals.forEach(el=>{el.classList.add('in');if(el.id==='mu-stats')animateStatBand();});
+  }else{
+    const io=new IntersectionObserver((ents)=>{
+      ents.forEach(e=>{
+        if(!e.isIntersecting)return;
+        e.target.classList.add('in');
+        if(e.target.id==='mu-stats')animateStatBand();
+        io.unobserve(e.target);
+      });
+    },{threshold:.16,rootMargin:'0px 0px -8% 0px'});
+    reveals.forEach(el=>io.observe(el));
+  }
+
+  // Button ripple on tap/click.
+  if(!REDUCE){
+    document.addEventListener('pointerdown',(e)=>{
+      const b=e.target.closest('.hero-cta,.cnav-login,.btn,.dash-act');
+      if(!b)return;
+      const r=b.getBoundingClientRect();
+      const d=Math.max(r.width,r.height);
+      const s=document.createElement('span');
+      s.className='ripple';
+      s.style.width=s.style.height=d+'px';
+      s.style.left=(e.clientX-r.left-d/2)+'px';
+      s.style.top=(e.clientY-r.top-d/2)+'px';
+      b.appendChild(s);
+      setTimeout(()=>s.remove(),560);
+    },{passive:true});
+
+    // Subtle 3D tilt on the explore cards (hover-capable pointers only).
+    if(window.matchMedia&&matchMedia('(hover:hover) and (pointer:fine)').matches){
+      document.querySelectorAll('.mu-card').forEach(card=>{
+        card.addEventListener('pointermove',(e)=>{
+          const r=card.getBoundingClientRect();
+          const px=(e.clientX-r.left)/r.width-.5;
+          const py=(e.clientY-r.top)/r.height-.5;
+          card.style.transform=`translateY(-5px) perspective(700px) rotateX(${(-py*5).toFixed(2)}deg) rotateY(${(px*6).toFixed(2)}deg)`;
+        });
+        card.addEventListener('pointerleave',()=>{card.style.transform='';});
+      });
+    }
+  }
+
+  // Keep the live-match strip fresh even if an admin flips a status elsewhere.
+  setInterval(()=>{try{renderLiveStrip();}catch(e){}},15000);
 })();

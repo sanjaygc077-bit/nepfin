@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=11">
+<link rel="stylesheet" href="css/styles.css?v=12">
 </head>
 <body>
 
@@ -51,6 +51,11 @@
     <span class="sponsor-name">GALAMART</span>
     <span class="sponsor-cta">Visit store →</span>
   </a>
+  <a class="live-strip" id="live-strip" style="display:none" onclick="enterMatchday()">
+    <span class="live-strip-dot">LIVE</span>
+    <span class="live-strip-txt" id="live-strip-txt"></span>
+    <span class="live-strip-cta">Watch →</span>
+  </a>
   <div class="cnav">
     <div class="cnav-crest"><img src="crest.png?v=1" alt="Nepcali FC crest"></div>
     <div class="cnav-name">Nepcali FC</div>
@@ -78,6 +83,15 @@
     </div>
   </section>
 
+  <section class="mu-stats reveal" id="mu-stats">
+    <div class="mu-stats-inner">
+      <div class="stat-cell"><span class="stat-num" id="stat-players" data-count="0">0</span><span class="stat-cap">Players</span></div>
+      <div class="stat-cell"><span class="stat-num" id="stat-matches" data-count="0">0</span><span class="stat-cap">Matches</span></div>
+      <div class="stat-cell"><span class="stat-num" id="stat-goals" data-count="0">0</span><span class="stat-cap">Goals</span></div>
+      <div class="stat-cell"><span class="stat-num" id="stat-snaps" data-count="0">0</span><span class="stat-cap">Snaps</span></div>
+    </div>
+  </section>
+
   <section class="mu-news" id="mu-news" style="display:none">
     <div class="mu-news-inner">
       <span class="mu-news-tag">Latest</span>
@@ -94,7 +108,7 @@
     </div>
   </section>
 
-  <section class="mu-rail">
+  <section class="mu-rail reveal">
     <div class="mu-rail-hd"><span>Explore the club</span></div>
     <div class="mu-cards">
       <div class="mu-card" onclick="enterApp('dashboard')">
@@ -136,7 +150,7 @@
     </div>
   </section>
 
-  <div class="mu-split">
+  <div class="mu-split reveal">
     <section class="mu-results">
       <div class="mu-rail-hd"><span>Results</span></div>
       <div id="lastmatch"><div class="empty">No matches yet.</div></div>
@@ -152,7 +166,7 @@
     </section>
   </div>
 
-  <section class="mu-footwrap">
+  <section class="mu-footwrap reveal">
     <div class="socials" id="welcome-socials" style="display:none"></div>
     <div class="social-edit-wrap" id="social-edit-wrap" style="display:none">
       <button class="social-edit-toggle" onclick="toggleSocialEdit()">🔗 Add / edit social links</button>
@@ -334,6 +348,10 @@
     </div>
 
     <div class="dash-grid">
+      <div class="card dash-activity-card">
+        <div class="card-hd">⚡ Recent activity</div>
+        <div id="d-activity"><div class="empty">Nothing yet — add a match, snap or poll.</div></div>
+      </div>
       <div class="card">
         <div class="card-hd">🆚 Latest result</div>
         <div id="d-lastresult"><div class="empty">No matches yet</div></div>
@@ -525,6 +543,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
-<script src="js/app.js?v=7"></script>
+<script src="js/app.js?v=8"></script>
 </body>
 </html>
