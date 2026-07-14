@@ -298,6 +298,22 @@ tr:last-child td{border-bottom:none}
 .mu-hero-body{position:relative;z-index:2;width:100%;max-width:1120px;margin:0 auto;padding:36px 22px 42px;animation:fadeUp .6s ease backwards}
 .mu-kicker{display:inline-block;background:var(--crimson);color:#fff;font-family:var(--head);font-weight:700;text-transform:uppercase;letter-spacing:.1em;font-size:11px;padding:6px 12px;border-radius:4px;margin-bottom:16px}
 .mu-hero-title{font-family:var(--display);font-weight:400;font-size:clamp(46px,9vw,94px);line-height:.88;text-transform:uppercase;color:#fff;margin-bottom:16px;text-shadow:0 4px 34px rgba(0,0,0,.55)}
+/* Fill each headline word with the Nepal (left, crimson) + USA (right, stripes) flags.
+   inline-block makes the background map onto the word's actual width, not the full row. */
+.flagfill{
+  display:inline-block;
+  -webkit-text-fill-color:transparent;color:transparent;
+  -webkit-background-clip:text;background-clip:text;
+  background-color:#DC143C;
+  background-image:
+    linear-gradient(#3C3B6E,#3C3B6E),
+    repeating-linear-gradient(180deg,#B22234 0 8.33%,#ffffff 8.33% 16.66%);
+  background-repeat:no-repeat;
+  background-size:24% 42%, 50% 100%;
+  background-position:50% 0, 100% 0;
+  text-shadow:none;
+  filter:drop-shadow(0 3px 16px rgba(0,0,0,.6));
+}
 .mu-hero-sub{color:#e6edf7;font-size:15px;max-width:460px;line-height:1.55;margin-bottom:24px;text-shadow:0 2px 12px rgba(0,0,0,.6)}
 .mu-hero-actions{display:flex;gap:12px;flex-wrap:wrap}
 .hero-cta.ghost{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.45)}
@@ -318,6 +334,84 @@ tr:last-child td{border-bottom:none}
 .mu-card-title{font-family:var(--head);font-size:19px;font-weight:700;text-transform:uppercase;color:#fff;margin:3px 0 5px;line-height:1}
 .mu-card-desc{font-size:12px;color:var(--muted);line-height:1.4}
 .mu-footwrap{max-width:1120px;margin:0 auto;padding:22px 22px 34px;text-align:center;background:#060d1c}
+/* ---- Results / Last Match ---- */
+.mu-results{max-width:1120px;margin:0 auto;padding:26px 22px 10px;background:#060d1c}
+.result-card{background:linear-gradient(160deg,#13243f,#0b1830);border:1px solid var(--line);border-top:3px solid var(--crimson);border-radius:14px;padding:20px 18px;max-width:560px}
+.result-card.big{margin-bottom:0}
+.result-comp{font-family:var(--head);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--gold-l);text-align:center;margin-bottom:14px}
+.result-row{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px}
+.rc-team{font-family:var(--head);font-size:17px;font-weight:700;text-transform:uppercase;color:#fff;line-height:1.05}
+.rc-team.h{text-align:right}.rc-team.a{text-align:left}
+.rc-score{font-family:var(--display);font-size:34px;color:#fff;background:#0a1428;border:1px solid var(--line2);border-radius:10px;padding:6px 14px;white-space:nowrap}
+.result-status{text-align:center;margin-top:12px}
+.result-status .st{font-family:var(--head);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:5px;background:rgba(255,255,255,.08);color:var(--muted)}
+.result-status .st.live{background:var(--crimson);color:#fff}
+.result-status .st.ft{background:rgba(52,211,153,.16);color:var(--green);border:1px solid rgba(52,211,153,.3)}
+.result-sub{text-align:center;color:var(--muted);font-size:12px;margin-top:8px}
+.results-toggle{margin-top:14px;background:none;border:1px solid var(--line2);color:var(--gold-l);font-family:var(--head);font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:9px 16px;border-radius:8px;cursor:pointer}
+.results-toggle:hover{color:#fff}
+.recent-item{display:grid;grid-template-columns:1fr auto 1fr auto;align-items:center;gap:10px;background:#0b1830;border:1px solid var(--line);border-radius:10px;padding:11px 13px;margin-top:8px;max-width:560px}
+.recent-item .ri-team{font-size:13px;font-weight:600;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.recent-item .ri-team.h{text-align:right}
+.recent-item .ri-score{font-family:var(--head);font-weight:700;color:#fff;background:#0a1428;border-radius:6px;padding:3px 9px;font-size:14px}
+.recent-item .ri-del{background:none;border:none;color:var(--muted2);cursor:pointer;font-size:15px}
+.recent-item .ri-del:hover{color:var(--red)}
+.result-hist{margin:0 auto 18px;max-width:560px}
+.result-hist .md-card{margin:0}
+.result-del{margin-top:8px;background:none;border:1px solid var(--line2);color:var(--muted);font-size:11px;letter-spacing:.04em;padding:6px 12px;border-radius:8px;cursor:pointer}
+.result-del:hover{color:var(--red);border-color:var(--red)}
+.match-item{max-width:560px;margin:0 0 12px}
+.match-simple{background:#0b1830;border:1px solid var(--line);border-top:3px solid var(--crimson);border-radius:12px;padding:14px 16px;cursor:pointer;transition:.15s}
+.match-simple:hover{border-color:var(--line2)}
+.ms-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.ms-right{display:flex;align-items:center;gap:8px}
+.ms-del{background:none;border:none;color:var(--muted2);cursor:pointer;font-size:14px;padding:0;line-height:1}
+.ms-del:hover{color:var(--red)}
+.ms-comp{font-family:var(--head);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--gold-l)}
+.ms-badge{font-family:var(--head);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:2px 8px;border-radius:5px;background:rgba(255,255,255,.08);color:var(--muted)}
+.ms-badge.live{background:var(--crimson);color:#fff}
+.ms-badge.ft{background:rgba(52,211,153,.16);color:var(--green)}
+.ms-row{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px}
+.ms-team{font-family:var(--head);font-size:15px;font-weight:700;text-transform:uppercase;color:#fff;line-height:1.05}
+.ms-team.h{text-align:right}.ms-team.a{text-align:left}
+.ms-score{font-family:var(--display);font-size:26px;color:#fff;background:#0a1428;border:1px solid var(--line2);border-radius:8px;padding:3px 12px;white-space:nowrap}
+.ms-toggle{text-align:center;margin-top:10px;font-family:var(--head);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted2)}
+.match-full{margin:10px auto 0;max-width:560px}
+.match-full .md-card{margin:0}
+#cm-preview .md-card{margin:0 auto}
+.edit-toggle{width:100%;display:flex;justify-content:space-between;align-items:center;background:var(--panel)}
+.edit-toggle .tg-arrow{font-size:12px;opacity:.8}
+/* Results + Club Preview: pinned to the SAME 1120 container/left edge as the
+   card rail. Single column on mobile; media-forward two columns on desktop. */
+.mu-split{max-width:1120px;margin:0 auto;padding:20px 22px 10px;background:#060d1c;display:grid;grid-template-columns:1fr;gap:26px}
+.mu-split .mu-results,.mu-split .mu-preview{max-width:none;margin:0;padding:0}
+.mu-split .mu-rail-hd{padding:0;margin-bottom:14px}
+.mu-split .result-card,.mu-split .match-item,.mu-split .recent-item{max-width:none}
+.mu-preview{background:#060d1c}
+@media(min-width:900px){
+  .mu-split{grid-template-columns:minmax(0,0.82fr) minmax(0,1.18fr);gap:38px;align-items:start;padding:34px 44px 20px}
+}
+.preview-stage{position:relative;width:100%;aspect-ratio:16/9;border-radius:16px;overflow:hidden;background:#0a1428;border:1px solid var(--line2);box-shadow:0 24px 64px rgba(0,0,0,.6),inset 0 0 0 1px rgba(255,255,255,.03)}
+.pv-slide{position:absolute;inset:0;opacity:0;transition:opacity 1.4s ease;pointer-events:none}
+.pv-slide.on{opacity:1;pointer-events:auto}
+.pv-media{width:100%;height:100%;object-fit:cover;display:block}
+.pv-slide.on img.pv-media{animation:kenburns 9s ease-out forwards}
+@keyframes kenburns{from{transform:scale(1.05)}to{transform:scale(1.16)}}
+.pv-slide::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(4,8,18,.88),rgba(4,8,18,0) 46%)}
+.pv-cap{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:22px 24px;color:#fff;font-family:var(--head);font-size:17px;font-weight:600;letter-spacing:.02em;text-shadow:0 2px 14px rgba(0,0,0,.7)}
+.pv-dots{position:absolute;z-index:3;bottom:14px;right:16px;display:flex;gap:7px}
+.pv-dot{width:8px;height:8px;border-radius:50%;border:none;background:rgba(255,255,255,.4);cursor:pointer;padding:0;transition:.25s}
+.pv-dot.on{background:var(--gold);width:20px;border-radius:5px}
+@media(min-width:900px){.pv-cap{font-size:20px;padding:24px 28px}}
+#snaps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.snap{position:relative;background:#0b1830;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.snap-media{aspect-ratio:1/1;background:#060d1c;display:flex;align-items:center;justify-content:center}
+.snap-media img,.snap-media video{width:100%;height:100%;object-fit:cover;display:block}
+.snap-cap{padding:8px 10px;font-size:12px;color:var(--muted);line-height:1.35}
+.snap-del{position:absolute;top:6px;right:6px;background:rgba(0,0,0,.55);border:none;color:#fff;cursor:pointer;font-size:13px;width:28px;height:28px;border-radius:7px;line-height:1}
+.snap-del:hover{background:var(--crimson)}
+@media(min-width:700px){#snaps-grid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}}
+@media(min-width:900px){.mu-results{padding:34px 44px 10px}}
 @media(min-width:900px){
   .mu-hero{min-height:80vh}
   .mu-hero-body{padding:0 44px 66px}
@@ -362,6 +456,8 @@ tr:last-child td{border-bottom:none}
     <nav class="cnav-menu">
       <a onclick="enterApp('tournament')">Cup</a>
       <a onclick="enterApp('matchday')">Live</a>
+      <a onclick="enterApp('matches')">Matches</a>
+      <a onclick="enterApp('snaps')">Snaps</a>
       <a onclick="enterApp('rsvp')">RSVP</a>
       <a onclick="enterApp('dashboard')">Dashboard</a>
       <a onclick="enterApp('roster')">Roster</a>
@@ -374,7 +470,7 @@ tr:last-child td{border-bottom:none}
     <div class="mu-hero-shade"></div>
     <div class="mu-hero-body">
       <span class="mu-kicker">Nepcali Football Club · Est. 2015</span>
-      <h1 class="mu-hero-title">Pride.<br>Roots.<br>Heritage.</h1>
+      <h1 class="mu-hero-title"><span class="flagfill">Pride.</span><br><span class="flagfill">Roots.</span><br><span class="flagfill">Heritage.</span></h1>
       <p class="mu-hero-sub">The home of our Nepali football family — live scores, the squad, matchday graphics, attendance and more.</p>
       <div class="mu-hero-actions">
         <button class="hero-cta" onclick="enterApp('tournament')">Enter the club →</button>
@@ -393,6 +489,14 @@ tr:last-child td{border-bottom:none}
       <div class="mu-card" onclick="enterApp('tournament')">
         <div class="mu-card-thumb">🏆</div>
         <div class="mu-card-body"><span class="mu-card-kicker">Competition</span><div class="mu-card-title">Tournament Cup</div><div class="mu-card-desc">Scores, table, knockouts & top scorers</div></div>
+      </div>
+      <div class="mu-card" onclick="enterApp('matches')">
+        <div class="mu-card-thumb">🆚</div>
+        <div class="mu-card-body"><span class="mu-card-kicker">Fixtures</span><div class="mu-card-title">Matches</div><div class="mu-card-desc">Nepcali FC vs other clubs — results & cards</div></div>
+      </div>
+      <div class="mu-card" onclick="enterApp('snaps')">
+        <div class="mu-card-thumb">📸</div>
+        <div class="mu-card-body"><span class="mu-card-kicker">Gallery</span><div class="mu-card-title">Snaps</div><div class="mu-card-desc">Club photos & videos from matchdays</div></div>
       </div>
       <div class="mu-card" onclick="enterApp('rsvp')">
         <div class="mu-card-thumb">🗳️</div>
@@ -416,6 +520,22 @@ tr:last-child td{border-bottom:none}
       </div>
     </div>
   </section>
+
+  <div class="mu-split">
+    <section class="mu-results">
+      <div class="mu-rail-hd"><span>Results</span></div>
+      <div id="lastmatch"><div class="empty">No matches yet.</div></div>
+      <div id="recent-wrap" style="display:none">
+        <button class="results-toggle" onclick="toggleResults()"><span id="results-toggle-txt">Show earlier matches</span> ▾</button>
+        <div id="recent-matches" style="display:none"></div>
+      </div>
+    </section>
+
+    <section class="mu-preview" id="mu-preview-wrap" style="display:none">
+      <div class="mu-rail-hd"><span>Club Preview</span></div>
+      <div id="preview-stage" class="preview-stage"></div>
+    </section>
+  </div>
 
   <section class="mu-footwrap">
     <div class="socials" id="welcome-socials" style="display:none"></div>
@@ -441,6 +561,8 @@ tr:last-child td{border-bottom:none}
     <nav class="nav sb-nav">
       <button class="nav-btn on" onclick="show('tournament',this)"><i>🏆</i>Cup</button>
       <button class="nav-btn" onclick="show('matchday',this)"><i>📢</i>Live</button>
+      <button class="nav-btn" onclick="show('matches',this)"><i>🆚</i>Matches</button>
+      <button class="nav-btn" onclick="show('snaps',this)"><i>📸</i>Snaps</button>
       <button class="nav-btn" onclick="show('rsvp',this)"><i>🗳️</i>RSVP</button>
       <button class="nav-btn" onclick="show('dashboard',this)"><i>📊</i>Dashboard</button>
       <button class="nav-btn" onclick="show('lineup',this)"><i>⚽</i>Starting XI</button>
@@ -473,41 +595,99 @@ tr:last-child td{border-bottom:none}
   </div>
 
   <div id="matchday" class="sec">
-    <div class="card">
-      <div class="card-hd">📢 Matchday graphic — custom / external match</div>
-      <div class="muted" style="margin-bottom:10px">Type any teams (e.g. a friendly vs another club), set the score & status, add goal/card/comment events, then download or share the graphic.</div>
-      <label>Title / competition</label>
-      <input id="cm-comp" type="text" placeholder="Nepcali FC" oninput="cmSet('comp',this.value)">
-      <label>Subtitle (stage, venue, date…)</label>
-      <input id="cm-stage" type="text" placeholder="Friendly · City Ground" oninput="cmSet('stage',this.value)">
-      <div class="row2">
-        <div><label>Home team</label><input id="cm-home" type="text" placeholder="Nepcali FC" oninput="cmSet('home',this.value)"></div>
-        <div><label>Away team</label><input id="cm-away" type="text" placeholder="Rivals FC" oninput="cmSet('away',this.value)"></div>
-      </div>
-      <div class="row2">
-        <div><label>Home score</label><input id="cm-hs" type="number" min="0" max="99" placeholder="0" oninput="cmSet('hs',this.value)"></div>
-        <div><label>Away score</label><input id="cm-as" type="number" min="0" max="99" placeholder="0" oninput="cmSet('as',this.value)"></div>
-      </div>
-      <label>Status</label>
-      <select id="cm-status" onchange="cmSet('status',this.value)">
-        <option value="up">Upcoming</option>
-        <option value="live">🔴 Live</option>
-        <option value="ft">Full-time</option>
-      </select>
-    </div>
-    <div class="card">
-      <div class="card-hd">📋 Events & comments</div>
-      <div id="cm-events"><div class="empty">No events yet.</div></div>
-      <div class="md-row2" style="margin-top:10px">
-        <button class="add-scorer-btn" onclick="cmAddEvent()">+ add event</button>
-        <button class="add-scorer-btn" onclick="cmAddComment()">💬 add comment</button>
-      </div>
-    </div>
     <div id="cm-preview"></div>
     <div class="md-actions">
       <button class="btn" onclick="downloadCustom()">⬇︎ Download image</button>
       <button class="btn" onclick="shareCustom()">📤 Share</button>
     </div>
+    <button class="btn" style="margin-top:10px;background:linear-gradient(135deg,var(--gold),#b8902b);color:#1a1205" onclick="saveCustomToHistory()">🆚 Save to Matches</button>
+    <button class="btn" style="margin-top:8px;background:var(--panel)" onclick="cmReset()">🆕 New match (clear form)</button>
+
+    <div class="card" style="margin-top:16px">
+      <button class="btn edit-toggle" onclick="toggleEdit('cm-details',this)">⚙️ Match details <span class="tg-arrow">▾</span></button>
+      <div id="cm-details" style="display:none;margin-top:12px">
+        <label>Title / competition</label>
+        <input id="cm-comp" type="text" placeholder="Nepcali FC" oninput="cmSet('comp',this.value)">
+        <label>Subtitle (stage, venue, date…)</label>
+        <input id="cm-stage" type="text" placeholder="Friendly · City Ground" oninput="cmSet('stage',this.value)">
+        <div class="row2">
+          <div><label>Home team</label><input id="cm-home" type="text" placeholder="Nepcali FC" oninput="cmSet('home',this.value)"></div>
+          <div><label>Away team</label><input id="cm-away" type="text" placeholder="Rivals FC" oninput="cmSet('away',this.value)"></div>
+        </div>
+        <div class="row2">
+          <div><label>Home score</label><input id="cm-hs" type="number" min="0" max="99" placeholder="0" oninput="cmSet('hs',this.value)"></div>
+          <div><label>Away score</label><input id="cm-as" type="number" min="0" max="99" placeholder="0" oninput="cmSet('as',this.value)"></div>
+        </div>
+        <label>Status</label>
+        <select id="cm-status" onchange="cmSet('status',this.value)">
+          <option value="up">Upcoming</option>
+          <option value="live">🔴 Live</option>
+          <option value="ft">Full-time</option>
+        </select>
+      </div>
+    </div>
+    <div class="card">
+      <button class="btn edit-toggle" onclick="toggleEdit('cm-events-wrap',this)">📋 Events & comments <span class="tg-arrow">▾</span></button>
+      <div id="cm-events-wrap" style="display:none;margin-top:12px">
+        <div id="cm-events"><div class="empty">No events yet.</div></div>
+        <div class="md-row2" style="margin-top:10px">
+          <button class="add-scorer-btn" onclick="cmAddEvent()">+ add event</button>
+          <button class="add-scorer-btn" onclick="cmAddComment()">💬 add comment</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="matches" class="sec">
+    <div id="matches-list"><div class="empty">Loading…</div></div>
+    <div class="card" id="matches-newcard">
+      <button class="btn" id="nm-open" onclick="toggleNewMatch()">＋ Create new match</button>
+      <div id="nm-form" style="display:none">
+        <div class="card-hd" style="margin-top:14px">🆚 New match</div>
+        <div class="muted" style="margin-bottom:10px">Nepcali FC vs another club. For a rich card with goal/card events, build it in the <b>Live</b> tab instead.</div>
+        <label>Competition / title</label>
+        <input id="nm-comp" type="text" placeholder="Friendly">
+        <div class="row2">
+          <div><label>Home team</label><input id="nm-home" type="text" placeholder="Nepcali FC"></div>
+          <div><label>Away team</label><input id="nm-away" type="text" placeholder="Rivals FC"></div>
+        </div>
+        <div class="row2">
+          <div><label>Home score</label><input id="nm-hs" type="number" min="0" max="99" placeholder="0"></div>
+          <div><label>Away score</label><input id="nm-as" type="number" min="0" max="99" placeholder="0"></div>
+        </div>
+        <label>Status</label>
+        <select id="nm-status">
+          <option value="ft">Full-time</option>
+          <option value="live">🔴 Live</option>
+          <option value="up">Upcoming</option>
+        </select>
+        <div class="md-row2" style="margin-top:10px">
+          <button class="btn" onclick="createMatch()">Save match</button>
+          <button class="btn" style="background:var(--panel)" onclick="show('matchday',document.querySelectorAll('.nav-btn')[1])">📢 Build in Live (events)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="snaps" class="sec">
+    <div class="card">
+      <button class="btn" id="snap-open" onclick="toggleSnapForm()">📸 Add photo / video</button>
+      <div id="snap-form" style="display:none">
+        <div class="card-hd" style="margin-top:14px">📸 Add a snap</div>
+        <div class="muted" style="margin-bottom:10px">Upload a photo or video from your device (max ~50&nbsp;MB), or paste a link.</div>
+        <label>Choose file</label>
+        <input id="snap-file" type="file" accept="image/*,video/*">
+        <label>Caption (optional)</label>
+        <input id="snap-caption" type="text" placeholder="Cup final celebrations 🎉">
+        <button class="btn" id="snap-upload-btn" onclick="uploadSnap()">Upload</button>
+        <div id="snap-progress" class="muted" style="margin-top:8px"></div>
+        <div class="muted" style="margin:14px 0 6px;border-top:1px solid var(--line);padding-top:12px">…or add by link</div>
+        <label>Photo / video URL</label>
+        <input id="snap-url" type="text" placeholder="https://…">
+        <button class="btn" style="background:var(--panel)" onclick="addSnapUrl()">Add link</button>
+      </div>
+    </div>
+    <div id="snaps-grid"><div class="empty">Loading…</div></div>
   </div>
 
   <div id="dashboard" class="sec">
@@ -1002,6 +1182,8 @@ async function loadAll(){
   renderDashboardExtras();
   updateWelcomeStats();
   loadPolls();
+  loadResults();
+  loadSnaps();
   loadPrivate();
 }
 // Roster + Dashboard are public to read; Money tab is gated in the UI.
@@ -1220,7 +1402,7 @@ function renderDashboard(players,payments){
 
 function isPlayed(m){return m.home_goals!==null&&m.away_goals!==null&&m.home_goals!==undefined&&m.away_goals!==undefined;}
 
-function renderTournament(){renderSetup();renderMatches();renderTable();renderMatchday();}
+function renderTournament(){renderSetup();renderMatches();renderTable();renderMatchday();renderResults();}
 
 function renderSetup(){
   const cg=document.getElementById('t-count-grid');
@@ -1670,6 +1852,266 @@ function renderCustomMatch(){
   const st=document.getElementById('cm-status');if(st)st.value=c.status||'up';
   cmRenderEvents();cmRenderPreview();
 }
+function cmReset(){
+  if(!confirm('Clear the Live editor and start a blank match?\n\nTip: tap “Save to Matches” first if you want to keep the current one.'))return;
+  _settings.custom_match={comp:'',stage:'',home:'',away:'',hs:0,as:0,status:'up',events:[]};
+  saveSettings();
+  renderCustomMatch();
+}
+
+// ---- Matches — Nepcali FC vs other clubs (EXTERNAL games only) -------------
+// The full broadcast card (teams, score, status + events) is saved to the
+// `results` table from the Matchday Live editor, and rendered identically via
+// mdPreviewHTML() in the Matches section + the home "Results" preview.
+// Internal Cup fixtures are NOT stored here — they live in the Cup tab.
+let extResults=[];
+async function loadResults(){
+  if(!supa){renderResults();return;}
+  const r=await supa.from('results').select('*').order('created_at',{ascending:false});
+  extResults=r.error?[]:(r.data||[]);
+  renderResults();
+}
+// Nepcali FC games always take priority; the rest (e.g. internal Cup finals)
+// follow. Each group keeps newest-first order from the query.
+function isNepcaliMatch(d){d=d||{};return /nepcali/i.test((d.home||'')+' '+(d.away||''));}
+function sortedResults(){
+  const nep=[],oth=[];
+  extResults.forEach(r=>{(isNepcaliMatch(r.data)?nep:oth).push(r);});
+  return nep.concat(oth);
+}
+// Simple, tappable score card that expands to the full broadcast card.
+// `pfx` keeps element IDs unique between the Matches tab and the home preview
+// (the same match renders in both — without a prefix the toggle hits the hidden copy).
+function matchRow(row,pfx){
+  const d=(row&&row.data)||{};
+  const key=pfx+row.id;
+  const cls=d.status==='live'?'live':d.status==='ft'?'ft':'';
+  const st=d.status==='live'?'● Live':d.status==='ft'?'Full-time':'Upcoming';
+  const score=d.status==='up'?'vs':`${d.hs==null?0:d.hs} - ${d.as==null?0:d.as}`;
+  return `<div class="match-item">
+    <div class="match-simple" onclick="toggleMatchCard('${key}')">
+      <div class="ms-top"><span class="ms-comp">${escAttr(d.comp||'Match')}</span>
+        <span class="ms-right"><span class="ms-badge ${cls}">${st}</span><button class="ms-del" onclick="event.stopPropagation();deleteResult('${row.id}')" title="Remove match">🗑</button></span></div>
+      <div class="ms-row">
+        <span class="ms-team h">${escAttr(d.home||'Home')}</span>
+        <span class="ms-score">${score}</span>
+        <span class="ms-team a">${escAttr(d.away||'Away')}</span>
+      </div>
+      <div class="ms-toggle" id="mt-${key}">▾ Match center</div>
+    </div>
+    <div class="match-full" id="mf-${key}" style="display:none">
+      ${mdPreviewHTML(d)}
+      <button class="result-del" onclick="deleteResult('${row.id}')" title="Remove match">🗑 Remove</button>
+    </div>
+  </div>`;
+}
+function toggleMatchCard(key){
+  const f=document.getElementById('mf-'+key);const t=document.getElementById('mt-'+key);
+  if(!f)return;
+  const open=f.style.display==='none'||!f.style.display;
+  f.style.display=open?'block':'none';
+  if(t)t.textContent=open?'▴ Match center':'▾ Match center';
+}
+function renderResults(){
+  const rows=sortedResults();
+  // Full "Matches" section (all saved games, simple cards → expand for full card).
+  const ml=document.getElementById('matches-list');
+  if(ml)ml.innerHTML=rows.length?rows.map(r=>matchRow(r,'m-')).join(''):'<div class="empty">No matches saved yet. Tap “Create new match” below, or build a rich card in the <b>Live</b> tab.</div>';
+  // Home "Results" preview: last match + fold-out for the rest.
+  const last=document.getElementById('lastmatch');if(!last)return;
+  const rw=document.getElementById('recent-wrap');
+  if(!rows.length){last.innerHTML='<div class="empty">No matches saved yet. Add one in the <b>Matches</b> tab.</div>';if(rw)rw.style.display='none';return;}
+  last.innerHTML=matchRow(rows[0],'h-');
+  const rest=rows.slice(1);
+  if(rest.length){rw.style.display='block';document.getElementById('recent-matches').innerHTML=rest.map(r=>matchRow(r,'h-')).join('');}
+  else if(rw)rw.style.display='none';
+}
+function toggleNewMatch(){
+  const f=document.getElementById('nm-form');const b=document.getElementById('nm-open');
+  if(!f)return;
+  const open=f.style.display==='none'||!f.style.display;
+  f.style.display=open?'block':'none';
+  if(b)b.textContent=open?'✕ Close':'＋ Create new match';
+}
+function toggleEdit(id,btn){
+  const el=document.getElementById(id);if(!el)return;
+  const open=el.style.display==='none'||!el.style.display;
+  el.style.display=open?'block':'none';
+  if(btn){const a=btn.querySelector('.tg-arrow');if(a)a.textContent=open?'▴':'▾';}
+}
+function toggleResults(){
+  const el=document.getElementById('recent-matches');const t=document.getElementById('results-toggle-txt');
+  const open=el.style.display==='none'||!el.style.display;
+  el.style.display=open?'block':'none';t.textContent=open?'Hide earlier matches':'Show earlier matches';
+}
+let _savingResult=false;
+function sameMatch(a,b){
+  a=a||{};b=b||{};
+  return (a.home||'')===(b.home||'')&&(a.away||'')===(b.away||'')&&
+         (a.comp||'')===(b.comp||'')&&(Number(a.hs)||0)===(Number(b.hs)||0)&&
+         (Number(a.as)||0)===(Number(b.as)||0)&&(a.status||'')===(b.status||'');
+}
+async function saveResult(norm){
+  if(!supa){alert('Not connected to the database.');return;}
+  if(!norm||!(norm.home||'').trim()||!(norm.away||'').trim()){alert('Enter both team names first.');return;}
+  if(_savingResult)return;                                   // block accidental double-click
+  if(extResults.some(r=>sameMatch(r.data,norm))&&           // block obvious duplicates
+     !confirm('A match with the same teams, score & status is already saved.\n\nSave another copy anyway?'))return;
+  _savingResult=true;
+  const {error}=await supa.from('results').insert({data:norm});
+  _savingResult=false;
+  if(error){alert('Could not save.\n\n'+(error.message||'')+'\n\nIf it mentions a missing table/column, run schema-results.sql in Supabase.');return;}
+  await loadResults();
+  alert('Saved to Matches — see it in the Matches tab and on the home page.');
+}
+function saveCustomToHistory(){
+  const c=cmModel();
+  if(!(c.home||'').trim()||!(c.away||'').trim()){alert('Enter both team names in the Live editor first.');return;}
+  saveResult(mdNormCustom());
+}
+async function createMatch(){
+  const g=id=>document.getElementById(id);
+  const home=(g('nm-home').value||'').trim(),away=(g('nm-away').value||'').trim();
+  if(!home&&!away){alert('Enter team names first.');return;}
+  const status=g('nm-status').value||'ft';
+  const norm={comp:(g('nm-comp').value||'').trim()||'Match',stage:'',
+    home:home||'Nepcali FC',away:away||'Away',
+    homeBadge:mdInitial(home||'Nepcali FC'),awayBadge:mdInitial(away||'Away'),
+    hs:parseInt(g('nm-hs').value)||0,as:parseInt(g('nm-as').value)||0,
+    status:status,events:[],evHead:'📋 Events'};
+  await saveResult(norm);
+  ['nm-comp','nm-home','nm-away','nm-hs','nm-as'].forEach(id=>{const e=g(id);if(e)e.value='';});
+}
+async function deleteResult(id){
+  if(!confirm('Remove this match?'))return;
+  await supa.from('results').delete().eq('id',id);
+  loadResults();
+}
+
+// ---- Snaps — photos & videos gallery ---------------------------------------
+let snaps=[];
+const SNAP_BUCKET='snaps';
+function toggleSnapForm(){
+  const f=document.getElementById('snap-form');const b=document.getElementById('snap-open');
+  if(!f)return;
+  const open=f.style.display==='none'||!f.style.display;
+  f.style.display=open?'block':'none';
+  if(b)b.textContent=open?'✕ Close':'📸 Add photo / video';
+}
+async function loadSnaps(){
+  if(!supa){renderSnaps();return;}
+  const r=await supa.from('snaps').select('*').order('created_at',{ascending:false});
+  snaps=r.error?[]:(r.data||[]);
+  renderSnaps();
+}
+function snapCardHTML(s){
+  const cap=s.caption?`<div class="snap-cap">${escAttr(s.caption)}</div>`:'';
+  const media=(s.type==='video')
+    ? `<video src="${escAttr(s.url)}" controls preload="metadata" playsinline></video>`
+    : `<img src="${escAttr(s.url)}" loading="lazy" alt="${escAttr(s.caption||'snap')}">`;
+  return `<div class="snap">
+    <div class="snap-media">${media}</div>
+    ${cap}
+    <button class="snap-del" onclick="deleteSnap('${s.id}','${escAttr(s.path||'')}')" title="Remove">🗑</button>
+  </div>`;
+}
+function renderSnaps(){
+  const el=document.getElementById('snaps-grid');
+  if(el){
+    el.innerHTML=snaps.length?snaps.map(snapCardHTML).join(''):'<div class="empty">No snaps yet. Tap “Add photo / video” to share the first one.</div>';
+  }
+  renderPreview();
+}
+
+// ---- Club Preview — dreamy landing-page slideshow of recent snaps ----------
+let previewIndex=0,previewTimer=null;
+function previewList(){return snaps.slice(0,12);}   // most-recent snaps
+function renderPreview(){
+  const stage=document.getElementById('preview-stage');
+  const wrap=document.getElementById('mu-preview-wrap');
+  if(!stage)return;
+  const list=previewList();
+  if(!list.length){if(wrap)wrap.style.display='none';stopPreview();stage.innerHTML='';return;}
+  if(wrap)wrap.style.display='block';
+  const slides=list.map((s,i)=>{
+    const media=s.type==='video'
+      ? `<video class="pv-media" src="${escAttr(s.url)}" muted loop playsinline preload="metadata"></video>`
+      : `<img class="pv-media" src="${escAttr(s.url)}" alt="${escAttr(s.caption||'')}">`;
+    const cap=s.caption?`<div class="pv-cap">${escAttr(s.caption)}</div>`:'';
+    return `<div class="pv-slide${i===0?' on':''}">${media}${cap}</div>`;
+  }).join('');
+  const dots=list.length>1?`<div class="pv-dots">${list.map((s,i)=>`<button class="pv-dot${i===0?' on':''}" onclick="previewGo(${i})"></button>`).join('')}</div>`:'';
+  stage.innerHTML=slides+dots;
+  previewIndex=0;
+  syncPreviewVideos();
+  startPreview();
+}
+function startPreview(){
+  stopPreview();
+  const n=previewList().length;
+  if(n>1)previewTimer=setInterval(()=>previewGo((previewIndex+1)%n),5200);
+}
+function stopPreview(){if(previewTimer){clearInterval(previewTimer);previewTimer=null;}}
+function previewGo(i){
+  const stage=document.getElementById('preview-stage');if(!stage)return;
+  const slides=stage.querySelectorAll('.pv-slide');const dots=stage.querySelectorAll('.pv-dot');
+  if(!slides.length)return;
+  previewIndex=i;
+  slides.forEach((sl,idx)=>sl.classList.toggle('on',idx===i));
+  dots.forEach((d,idx)=>d.classList.toggle('on',idx===i));
+  syncPreviewVideos();
+  startPreview();
+}
+function syncPreviewVideos(){
+  const stage=document.getElementById('preview-stage');if(!stage)return;
+  stage.querySelectorAll('.pv-slide').forEach(sl=>{
+    const v=sl.querySelector('video');if(!v)return;
+    if(sl.classList.contains('on'))v.play().catch(()=>{});else v.pause();
+  });
+}
+async function uploadSnap(){
+  if(!supa){alert('Not connected to the database.');return;}
+  const fi=document.getElementById('snap-file');
+  const file=fi&&fi.files&&fi.files[0];
+  if(!file){alert('Choose a photo or video first.');return;}
+  if(file.size>50*1024*1024){alert('That file is over 50 MB. Please pick a smaller one (or compress the video).');return;}
+  const btn=document.getElementById('snap-upload-btn');
+  const prog=document.getElementById('snap-progress');
+  const isVideo=(file.type||'').startsWith('video');
+  const ext=(file.name.split('.').pop()||'bin').toLowerCase().replace(/[^a-z0-9]/g,'');
+  const path=Date.now()+'-'+Math.random().toString(36).slice(2,8)+'.'+ext;
+  if(btn)btn.disabled=true;if(prog)prog.textContent='Uploading…';
+  const up=await supa.storage.from(SNAP_BUCKET).upload(path,file,{cacheControl:'3600',upsert:false,contentType:file.type||undefined});
+  if(up.error){if(btn)btn.disabled=false;if(prog)prog.textContent='';
+    alert('Upload failed: '+up.error.message+'\n\nMake sure you ran schema-snaps.sql (creates the “snaps” storage bucket).');return;}
+  const pub=supa.storage.from(SNAP_BUCKET).getPublicUrl(path);
+  const url=pub.data.publicUrl;
+  const caption=(document.getElementById('snap-caption').value||'').trim();
+  const {error}=await supa.from('snaps').insert({url,type:isVideo?'video':'image',caption,path});
+  if(btn)btn.disabled=false;if(prog)prog.textContent='';
+  if(error){alert('Uploaded the file but could not save the record: '+error.message);return;}
+  fi.value='';document.getElementById('snap-caption').value='';
+  loadSnaps();
+}
+async function addSnapUrl(){
+  if(!supa){alert('Not connected to the database.');return;}
+  const inp=document.getElementById('snap-url');
+  let url=(inp.value||'').trim();
+  if(!url){alert('Paste a photo or video link first.');return;}
+  if(!/^https?:\/\//i.test(url))url='https://'+url;
+  const isVideo=/\.(mp4|mov|webm|m4v|ogg)(\?|$)/i.test(url);
+  const caption=(document.getElementById('snap-caption').value||'').trim();
+  const {error}=await supa.from('snaps').insert({url,type:isVideo?'video':'image',caption});
+  if(error){alert('Could not save.\n\n'+(error.message||'')+'\n\nIf it mentions a missing table, run schema-snaps.sql in Supabase.');return;}
+  inp.value='';document.getElementById('snap-caption').value='';
+  loadSnaps();
+}
+async function deleteSnap(id,path){
+  if(!confirm('Remove this snap?'))return;
+  if(path)await supa.storage.from(SNAP_BUCKET).remove([path]);
+  await supa.from('snaps').delete().eq('id',id);
+  loadSnaps();
+}
 
 // ---- Social media links (editable in Dashboard, shown on landing page) ----
 const SOCIALS=[
@@ -1894,6 +2336,8 @@ function show(id,btn){
   document.getElementById(id).classList.add('on');btn.classList.add('on');
   if(id!=='tournament')mdStopPolling();
   if(id==='matchday')renderCustomMatch();
+  if(id==='matches')renderResults();
+  if(id==='snaps')loadSnaps();
   if(id==='rsvp')loadPolls();
   if(window.innerWidth<900)closeSidebar();
   const mi=document.querySelector('.main-inner');if(mi)mi.scrollTop=0;
@@ -1951,7 +2395,7 @@ function enterApp(tabId){
   document.getElementById('app').style.display='block';
   window.scrollTo(0,0);
   if(tabId){
-    const map={tournament:0,matchday:1,rsvp:2,dashboard:3,lineup:4,roster:5,money:6};
+    const map={tournament:0,matchday:1,matches:2,snaps:3,rsvp:4,dashboard:5,lineup:6,roster:7,money:8};
     const btn=document.querySelectorAll('.nav-btn')[map[tabId]];
     if(btn)btn.click();
   }
