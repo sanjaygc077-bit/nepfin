@@ -245,7 +245,37 @@ tr:last-child td{border-bottom:none}
 .xi-tok{position:absolute;transform:translate(-50%,-50%);width:60px;text-align:center;z-index:2}
 .xi-shirt{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#b8902b);color:#1a1205;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto;font-size:13px;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.4)}
 .xi-shirt.empty{background:linear-gradient(135deg,#1a2c4a,#0c1830);color:var(--muted);border-color:var(--line2)}
+.xi-shirt.photo{background-size:cover;background-position:center center;background-repeat:no-repeat;color:transparent;position:relative}
+.xi-badge{position:absolute;right:-4px;bottom:-4px;width:18px;height:18px;border-radius:50%;background:var(--crimson);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;border:1.5px solid #fff}
 .xi-nm{font-size:10px;color:#fff;margin-top:3px;text-shadow:0 1px 3px rgba(0,0,0,.9);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}
+/* Roster player photo detail panel */
+.pl-clickable{cursor:pointer}
+.pl-cam{font-size:11px}
+.pl-arrow{color:var(--muted);font-size:11px}
+.pd{padding:0 4px 4px 4px}
+.pd-inner{display:flex;gap:14px;align-items:center;background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:14px}
+.pd-avatar{width:76px;height:76px;border-radius:12px;flex-shrink:0;background-size:cover;background-position:center;border:1px solid var(--line2)}
+.pd-avatar.empty{display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:32px;color:var(--gold-l);background:linear-gradient(135deg,#1a2c4a,#0c1830)}
+.pd-body{flex:1;min-width:0}
+.pd-name{font-weight:700;color:#fff}
+.pd-meta{font-size:12px;color:var(--muted);margin-top:2px}
+.pd-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.pd-btn{display:inline-block;font-size:12px;font-weight:600;padding:7px 12px;border-radius:8px;background:var(--panel2);border:1px solid var(--line2);color:var(--gold-l);cursor:pointer}
+.pd-btn-rm{background:transparent;color:var(--muted);border-color:var(--line)}
+.pd-prog{font-size:12px;color:var(--muted);margin-top:6px}
+/* FIFA-style player rating card */
+.rating-card{margin-top:10px;background:linear-gradient(135deg,#221806,#171205);border:1px solid var(--line2);border-radius:12px;padding:14px}
+.rc-top{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.rc-ovr-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted)}
+.rc-ovr{font-family:var(--display);font-size:40px;line-height:1;color:var(--gold-l)}
+.rc-ovr-inp{width:66px;margin:0;padding:4px 6px;font-family:var(--display);font-size:30px;color:var(--gold-l);text-align:center;background:rgba(0,0,0,.25)}
+.rc-pos{margin-left:auto;font-family:var(--head);font-weight:700;font-size:13px;color:#fff;background:rgba(255,255,255,.08);padding:5px 11px;border-radius:6px;text-transform:uppercase;letter-spacing:.05em}
+.rc-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 18px}
+.rc-stat{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:13px;border-bottom:1px solid rgba(255,255,255,.06);padding-bottom:5px}
+.rc-stat .k{color:var(--muted);font-weight:600;letter-spacing:.05em}
+.rc-stat .v{font-family:var(--head);font-weight:700;font-size:16px;color:#fff}
+.rc-stat input{width:54px;text-align:center;margin:0;padding:4px;font-size:14px}
+.rc-note{font-size:11px;color:var(--muted);margin-top:10px}
 .role-badge{display:inline-flex;align-items:center;justify-content:center;width:42px;height:32px;border-radius:8px;font-size:10px;font-weight:700;background:linear-gradient(135deg,#1a2c4a,#0c1830);border:1px solid var(--line2);color:var(--gold-l);flex-shrink:0;letter-spacing:.03em}
 /* ---- Matchday live graphics ---- */
 .md-controls{display:flex;flex-direction:column;gap:8px}
@@ -1427,8 +1457,11 @@ function renderLineup(){
       const nm=(xi.picks&&xi.picks[i])||'';
       const p=_players.find(pl=>pl.name===nm);
       const num=p&&p.jersey_no?p.jersey_no:(i+1);
+      const shirt=(p&&p.photo_url)
+        ? `<div class="xi-shirt photo" style="background-image:url('${escAttr(p.photo_url)}')"><span class="xi-badge">${num}</span></div>`
+        : `<div class="xi-shirt ${nm?'':'empty'}">${nm?num:s[0]}</div>`;
       return `<div class="xi-tok" style="left:${s[1]}%;top:${s[2]}%">
-        <div class="xi-shirt ${nm?'':'empty'}">${nm?num:s[0]}</div>
+        ${shirt}
         <div class="xi-nm">${nm?escAttr(firstName(nm)):''}</div></div>`;
     }).join('');
   }
@@ -1483,12 +1516,16 @@ function renderRoster(players){
           <button class="del" onclick="doneEdit()" style="margin-top:6px;color:var(--green)">✓</button></div>`;
       }
       // Simple list row: "10. Krisham" — leading number is the jersey number.
+      // Tapping the name expands a detail panel with the player's photo.
       const meta=(p.team||p.position)?`<div class="player-meta">${p.team?'Team '+p.team:''}${p.team&&p.position?' · ':''}${p.position||''}</div>`:'';
       const lead=p.jersey_no!=null?`${p.jersey_no}. `:'';
+      const cam=p.photo_url?'📷':'';
       const edit=`<button class="del" style="color:var(--gold-l)" onclick="editPlayer('${p.id}')">✏️</button><button class="del" onclick="deletePlayer('${p.id}')">🗑</button>`;
+      const open=_openPlayers.has(p.id);
       return `<div class="list-row">
-        <div class="player-info"><div class="player-name">${lead}${p.name}</div>${meta}</div>
-        ${edit}</div>`;
+        <div class="player-info pl-clickable" onclick="togglePlayer('${p.id}')"><div class="player-name">${lead}${p.name} <span class="pl-cam">${cam}</span> <span class="pl-arrow">${open?'▴':'▾'}</span></div>${meta}</div>
+        ${edit}</div>
+        <div class="pd" id="pd-${p.id}" style="display:${open?'block':'none'}">${playerDetailHTML(p)}</div>`;
     }).join('');
   }
   const sel=document.getElementById('m-player');
@@ -1496,6 +1533,102 @@ function renderRoster(players){
 }
 function editPlayer(id){_editId=id;renderRoster(_players);}
 function doneEdit(){_editId=null;renderRoster(_players);}
+
+// ---- Player photos (roster detail panel; reuses the public "snaps" bucket) ----
+const _openPlayers=new Set();
+function togglePlayer(id){
+  const el=document.getElementById('pd-'+id);if(!el)return;
+  if(_openPlayers.has(id)){_openPlayers.delete(id);}else{_openPlayers.add(id);}
+  renderRoster(_players);
+}
+function playerDetailHTML(p){
+  const avatar=p.photo_url
+    ? `<div class="pd-avatar" style="background-image:url('${escAttr(p.photo_url)}')"></div>`
+    : `<div class="pd-avatar empty">${escAttr((p.name||'?').trim().charAt(0).toUpperCase())}</div>`;
+  const info=[p.jersey_no!=null?('#'+p.jersey_no):'',p.team?('Team '+p.team):'',p.position||''].filter(Boolean).join(' · ');
+  const changeLbl=p.photo_url?'Change photo':'Add photo';
+  return `<div class="pd-inner">
+    ${avatar}
+    <div class="pd-body">
+      <div class="pd-name">${escAttr(p.name)}</div>
+      ${info?`<div class="pd-meta">${escAttr(info)}</div>`:''}
+      <div class="pd-actions">
+        <label class="pd-btn">${changeLbl}<input type="file" accept="image/*" style="display:none" onchange="uploadPlayerPhoto('${p.id}',this)"></label>
+        ${p.photo_url?`<button class="pd-btn pd-btn-rm" onclick="removePlayerPhoto('${p.id}')">Remove</button>`:''}
+      </div>
+      <div class="pd-prog" id="pp-${p.id}"></div>
+    </div>
+  </div>`+ratingCardHTML(p);
+}
+// FIFA-style rating card. Admins (Money editors) get editable inputs;
+// everyone else sees the values read-only.
+function ratingCardHTML(p){
+  const r=p.ratings||{};
+  const admin=canEditMoney();
+  const stats=[['PAC','pac'],['SHO','sho'],['PAS','pas'],['DRI','dri'],['DEF','def'],['PHY','phy']];
+  const nums=stats.map(s=>r[s[1]]).filter(v=>typeof v==='number');
+  const computed=nums.length?Math.round(nums.reduce((a,b)=>a+b,0)/nums.length):null;
+  const ovr=(typeof r.ovr==='number')?r.ovr:computed;
+  const hasAny=(typeof r.ovr==='number')||nums.length>0;
+  if(!admin&&!hasAny)return '';   // nothing to show guests for an unrated player
+  const ovrTop=admin
+    ? `<input type="number" min="0" max="99" class="rc-ovr-inp" value="${typeof r.ovr==='number'?r.ovr:''}" placeholder="${computed!=null?computed:'--'}" onchange="setPlayerRating('${p.id}','ovr',this.value)">`
+    : `<div class="rc-ovr">${ovr!=null?ovr:'--'}</div>`;
+  const rows=stats.map(s=>{
+    const v=r[s[1]];
+    const cell=admin
+      ? `<input type="number" min="0" max="99" value="${typeof v==='number'?v:''}" onchange="setPlayerRating('${p.id}','${s[1]}',this.value)">`
+      : `<span class="v">${typeof v==='number'?v:'--'}</span>`;
+    return `<div class="rc-stat"><span class="k">${s[0]}</span>${cell}</div>`;
+  }).join('');
+  return `<div class="rating-card">
+    <div class="rc-top">
+      <div><div class="rc-ovr-lbl">Overall</div>${ovrTop}</div>
+      ${p.position?`<div class="rc-pos">${escAttr(p.position)}</div>`:''}
+    </div>
+    <div class="rc-grid">${rows}</div>
+    ${admin?'<div class="rc-note">Editable by admins · visible to everyone. Leave blank to hide a stat.</div>':''}
+  </div>`;
+}
+async function setPlayerRating(id,key,val){
+  if(!supa)return;
+  const p=_players.find(x=>x.id===id);if(!p)return;
+  const r=Object.assign({},p.ratings||{});
+  let n=parseInt(val,10);
+  if(isNaN(n)){delete r[key];}else{r[key]=Math.max(0,Math.min(99,n));}
+  p.ratings=r;                                   // optimistic local update
+  const {error}=await supa.from('players').update({ratings:r}).eq('id',id);
+  if(error){alert(error.message+'\n\nIf it mentions a missing column, run schema-player-photos.sql in Supabase.');return;}
+  renderRoster(_players);
+}
+async function uploadPlayerPhoto(id,input){
+  if(!supa){alert('Not connected to the database.');return;}
+  const file=input&&input.files&&input.files[0];
+  if(!file)return;
+  if(file.size>10*1024*1024){alert('That image is over 10 MB. Please pick a smaller one.');return;}
+  const prog=document.getElementById('pp-'+id);if(prog)prog.textContent='Uploading…';
+  const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'');
+  const path='players/'+id+'-'+Date.now()+'.'+ext;
+  const up=await supa.storage.from(SNAP_BUCKET).upload(path,file,{cacheControl:'3600',upsert:false,contentType:file.type||undefined});
+  if(up.error){if(prog)prog.textContent='';
+    alert('Upload failed: '+up.error.message+'\n\nMake sure you ran schema-snaps.sql (creates the “snaps” storage bucket).');return;}
+  const url=supa.storage.from(SNAP_BUCKET).getPublicUrl(path).data.publicUrl;
+  const old=(_players.find(x=>x.id===id)||{}).photo_path;
+  const {error}=await supa.from('players').update({photo_url:url,photo_path:path}).eq('id',id);
+  if(error){if(prog)prog.textContent='';
+    alert('Uploaded the file but could not save it: '+error.message+'\n\nIf it mentions a missing column, run schema-player-photos.sql in Supabase.');return;}
+  if(old&&old!==path)await supa.storage.from(SNAP_BUCKET).remove([old]);
+  await loadAll();
+}
+async function removePlayerPhoto(id){
+  if(!supa)return;
+  if(!confirm('Remove this player’s photo?'))return;
+  const old=(_players.find(x=>x.id===id)||{}).photo_path;
+  const {error}=await supa.from('players').update({photo_url:null,photo_path:null}).eq('id',id);
+  if(error){alert(error.message);return;}
+  if(old)await supa.storage.from(SNAP_BUCKET).remove([old]);
+  await loadAll();
+}
 
 function txnDateStr(p){
   const raw=p.txn_date||p.created_at;if(!raw)return '';
