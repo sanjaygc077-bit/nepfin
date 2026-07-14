@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=9">
+<link rel="stylesheet" href="css/styles.css?v=11">
 </head>
 <body>
 
@@ -75,6 +75,22 @@
       <div class="mu-hero-actions">
         <button class="hero-cta" onclick="enterApp('dashboard')">Enter the club →</button>
         <button class="hero-cta ghost" onclick="enterMatchday()">📢 Matchday Live</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="mu-news" id="mu-news" style="display:none">
+    <div class="mu-news-inner">
+      <span class="mu-news-tag">Latest</span>
+      <div class="mu-news-track" id="news-track"></div>
+      <div class="mu-news-dots" id="news-dots"></div>
+    </div>
+    <div class="news-edit-wrap" id="news-edit-wrap" style="display:none">
+      <button class="social-edit-toggle" onclick="toggleNewsEdit()">📰 Edit news</button>
+      <div class="social-edit-box" id="news-edit-box" style="display:none">
+        <div id="news-edit-list"></div>
+        <button class="add-scorer-btn" onclick="addNewsItem()">+ Add news item</button>
+        <div class="social-edit-note">These roll one after another below the hero. Keep each line short.</div>
       </div>
     </div>
   </section>
@@ -510,6 +526,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
-<script src="js/app.js?v=4"></script>
+<script src="js/app.js?v=7"></script>
 </body>
 </html>

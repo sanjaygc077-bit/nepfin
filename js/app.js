@@ -361,6 +361,7 @@ function renderDashboardExtras(){
   renderEvents();
   renderSocials();
   renderSocialInputs();
+  renderNews();
   renderDashboard();
 }
 function kpiCount(id,to){
@@ -501,6 +502,9 @@ function applyAuthUI(){
   if(socialCard)socialCard.style.display=canAdmin?'block':'none';
   const socialEdit=document.getElementById('social-edit-wrap');
   if(socialEdit)socialEdit.style.display=canAdmin?'block':'none';
+  const newsEdit=document.getElementById('news-edit-wrap');
+  if(newsEdit)newsEdit.style.display=canAdmin?'block':'none';
+  refreshNewsTrack();
 }
 
 function renderRoster(players){
@@ -1487,6 +1491,35 @@ function toggleSocialEdit(){
   const b=document.getElementById('welcome-social-edit');if(!b)return;
   b.style.display=(b.style.display==='none'||!b.style.display)?'block':'none';
 }
+
+// ---- Rolling news / important info strip (landing page) ----
+const DEFAULT_NEWS=['Mini tournament coming — July 18 ⚽','Welcome to the new Nepcali FC — explore the squad, live scores & more'];
+function newsItems(){const n=_settings.news;return Array.isArray(n)?n:DEFAULT_NEWS;}
+function refreshNewsTrack(){
+  const track=document.getElementById('news-track');const dots=document.getElementById('news-dots');const sec=document.getElementById('mu-news');
+  if(!track||!sec)return;
+  if(dots){dots.innerHTML='';dots.style.display='none';}
+  const items=newsItems().filter(t=>(t||'').trim());
+  if(!items.length){track.innerHTML='';sec.style.display=canEditMoney()?'block':'none';return;}
+  sec.style.display='block';
+  const sep='<span class="nsep">◆</span>';
+  const seq=items.map(t=>`<span class="news-tick">${escAttr(t)}</span>`).join(sep);
+  // Duplicate the sequence so the scroll loops seamlessly (translateX -50% = one full copy).
+  track.innerHTML=`<div class="news-marquee" id="news-marquee">${seq}${sep}${seq}${sep}</div>`;
+  const m=document.getElementById('news-marquee');
+  if(m){const half=m.scrollWidth/2;const dur=Math.max(28,Math.round(half/32));m.style.animationDuration=dur+'s';}   // ~32px/sec (slow, readable)
+}
+function renderNewsEdit(){
+  const list=document.getElementById('news-edit-list');if(!list)return;
+  const items=newsItems();
+  list.innerHTML=items.map((t,i)=>`<div class="news-edit-row"><input type="text" value="${escAttr(t)}" oninput="setNewsItem(${i},this.value)" placeholder="News headline…"><button class="rm-btn" onclick="delNewsItem(${i})" title="Remove">✕</button></div>`).join('');
+}
+function renderNews(){refreshNewsTrack();renderNewsEdit();}
+function ensureNewsArr(){if(!Array.isArray(_settings.news))_settings.news=newsItems().slice();return _settings.news;}
+function setNewsItem(i,v){const a=ensureNewsArr();a[i]=v;saveSettings();refreshNewsTrack();}   // editor keeps focus (track is separate DOM)
+function addNewsItem(){const a=ensureNewsArr();a.push('');saveSettings();renderNews();}
+function delNewsItem(i){const a=ensureNewsArr();a.splice(i,1);saveSettings();renderNews();}
+function toggleNewsEdit(){const b=document.getElementById('news-edit-box');if(!b)return;b.style.display=(b.style.display==='none'||!b.style.display)?'block':'none';}
 
 // ---- RSVP polls (attendance + guest tracking, shareable to Viber) ----
 let polls=[],pollResponses=[],pollsReady=true;
