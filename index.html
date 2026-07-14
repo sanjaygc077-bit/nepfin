@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>NEP Cali Manager</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#070e1f; --bg2:#0a1428; --panel:#0f1d38; --panel2:#15294a;
@@ -12,25 +15,28 @@
   --gold:#d4af37; --gold-l:#e8c766; --crimson:#c0392b; --crimson-l:#e0492f;
   --txt:#f1f5fb; --muted:#9fb0c9; --muted2:#62748f;
   --green:#34d399; --red:#f87171; --field:#0b1830;
+  /* Man Utd–style editorial display fonts (colors stay as the club palette) */
+  --display:'Anton',Impact,'Arial Narrow Bold',sans-serif;
+  --head:'Oswald',-apple-system,BlinkMacSystemFont,sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--txt);background-image:radial-gradient(circle at 1px 1px,rgba(212,175,55,.05) 1px,transparent 0);background-size:26px 26px}
 .wrap{max-width:560px;margin:0 auto;padding:14px}
-header{background:linear-gradient(135deg,var(--panel2),var(--panel));border-radius:14px;padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;gap:11px;border:1px solid var(--line)}
-header h1{font-family:Georgia,serif;font-size:17px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#fff}
+header{background:linear-gradient(135deg,var(--panel2),var(--panel));border-radius:12px;padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;gap:11px;border:1px solid var(--line);border-bottom:3px solid var(--crimson)}
+header h1{font-family:var(--head);font-size:19px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#fff}
 .logout{font-size:12px;font-weight:600;color:var(--gold-l);background:none;border:1px solid var(--line2);padding:6px 13px;border-radius:100px;cursor:pointer}
 .home-btn{margin-left:auto;margin-right:7px;font-size:12px;font-weight:700;color:#1a1205;background:linear-gradient(135deg,var(--gold),#b8902b);border:1px solid var(--gold);padding:6px 13px;border-radius:100px;cursor:pointer}
 .nav{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:14px}
-.nav-btn{padding:11px 2px;border:1px solid var(--line);border-radius:12px;background:var(--panel);cursor:pointer;font-size:12px;color:var(--muted);text-align:center;line-height:1.3;transition:.15s}
+.nav-btn{padding:11px 2px;border:1px solid var(--line);border-radius:10px;background:var(--panel);cursor:pointer;font-size:11px;color:var(--muted);text-align:center;line-height:1.3;transition:.15s;font-family:var(--head);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
 .nav-btn.on{background:linear-gradient(135deg,var(--gold),#b8902b);color:#1a1205;border-color:var(--gold);font-weight:700}
 .nav-btn i{display:block;font-size:17px;margin-bottom:3px;font-style:normal}
 .sec{display:none}.sec.on{display:block}
 .subnav{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:14px}
-.subnav-btn{padding:10px 2px;border:1px solid var(--line);border-radius:10px;background:var(--panel);cursor:pointer;font-size:12px;color:var(--muted);text-align:center;transition:.15s}
-.subnav-btn.on{background:var(--crimson);color:#fff;border-color:var(--crimson);font-weight:600}
+.subnav-btn{padding:10px 2px;border:1px solid var(--line);border-radius:8px;background:var(--panel);cursor:pointer;font-size:11px;color:var(--muted);text-align:center;transition:.15s;font-family:var(--head);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.subnav-btn.on{background:var(--crimson);color:#fff;border-color:var(--crimson);font-weight:700}
 .subsec{display:none}.subsec.on{display:block}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:11px}
-.card-hd{font-family:Georgia,serif;font-size:14px;font-weight:700;margin-bottom:13px;color:#fff;letter-spacing:.03em}
+.card-hd{font-family:var(--head);font-size:16px;font-weight:700;margin-bottom:13px;color:#fff;letter-spacing:.05em;text-transform:uppercase;line-height:1.1;padding-left:11px;border-left:4px solid var(--crimson)}
 label{display:block;font-size:11px;color:var(--gold-l);margin-bottom:5px;text-transform:uppercase;letter-spacing:.06em;font-weight:600}
 input,select{width:100%;padding:11px 11px;border:1px solid var(--line);border-radius:9px;background:var(--field);color:var(--txt);font-size:15px;outline:none;margin-bottom:11px}
 input:focus,select:focus{border-color:var(--gold)}
@@ -38,7 +44,7 @@ input::placeholder{color:var(--muted2)}
 select option{background:#0b1830;color:var(--txt)}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:11px}
 .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:11px}
-.btn{width:100%;padding:13px;border:none;border-radius:11px;background:linear-gradient(135deg,var(--crimson-l),var(--crimson));color:#fff;font-size:15px;font-weight:700;cursor:pointer;letter-spacing:.02em}
+.btn{width:100%;padding:14px;border:none;border-radius:8px;background:linear-gradient(135deg,var(--crimson-l),var(--crimson));color:#fff;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:.09em;text-transform:uppercase;font-family:var(--head)}
 .btn:active{opacity:.85}
 .list-row{display:flex;align-items:center;gap:11px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06)}
 .list-row:last-child{border-bottom:none}
@@ -50,7 +56,7 @@ select option{background:#0b1830;color:var(--txt)}
 .del:hover{color:var(--red)}
 .stat-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:13px}
 .stat{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:13px;text-align:center}
-.stat-val{font-family:Georgia,serif;font-size:23px;font-weight:700;color:#fff}
+.stat-val{font-family:var(--display);font-size:26px;font-weight:400;color:#fff;letter-spacing:.01em}
 .stat-lbl{font-size:10px;color:var(--muted);margin-top:3px;text-transform:uppercase;letter-spacing:.05em}
 .pay-amt{font-weight:700;font-size:15px}
 .pos{color:var(--green)}.neg{color:var(--red)}
@@ -101,12 +107,24 @@ tr:last-child td{border-bottom:none}
 
 #welcome{min-height:100vh;display:flex;flex-direction:column}
 #welcome{background:#060d1c;min-height:100vh}
-.cnav{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;padding:11px 18px;background:rgba(6,13,28,0.92);backdrop-filter:blur(10px);border-bottom:1px solid rgba(212,175,55,0.18)}
+.cnav{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;padding:11px 18px;background:rgba(6,13,28,0.94);backdrop-filter:blur(10px);border-bottom:3px solid var(--crimson)}
 .cnav-crest{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#1a2c4a,#0c1830);border:1.5px solid #d4af37;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
-.cnav-login{margin-left:auto;background:none;border:1px solid rgba(212,175,55,0.5);color:#e8c766;font-size:12px;font-weight:600;padding:7px 14px;border-radius:100px;cursor:pointer}
-.hero{position:relative;display:flex;flex-direction:column;align-items:center;padding-bottom:22px;background:var(--bg)}
-.hero-banner{display:block;width:100%;height:auto;max-height:58vh;object-fit:contain}
-.hero .hero-cta{margin-top:18px}
+.cnav-name{font-family:var(--head);font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#fff;font-size:16px}
+.cnav-login{margin-left:auto;background:var(--crimson);border:none;color:#fff;font-family:var(--head);font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:8px 16px;border-radius:6px;cursor:pointer;transition:background .15s}
+.cnav-login:hover{background:var(--crimson-l)}
+/* Immersive hero: the banner is framed as a centerpiece, and a blurred,
+   scaled copy of it fills the surrounding space so wide screens feel
+   designed rather than empty. A gradient blends it into the page. */
+.hero{position:relative;display:flex;flex-direction:column;align-items:center;padding:40px 18px 28px;background:#060d1c;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:-12% -12% 0;background:url(club-banner.png) center 28%/cover no-repeat;filter:blur(70px) saturate(1.25);opacity:.4;transform:scale(1.25);z-index:0;pointer-events:none}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,13,28,.45),rgba(6,13,28,.82) 78%,#060d1c);z-index:0;pointer-events:none}
+.hero>*{position:relative;z-index:1}
+.hero-banner{display:block;width:100%;height:auto;border-radius:16px}
+.hero .hero-cta{margin-top:22px}
+@media(min-width:680px){
+  .hero{padding:64px 24px 44px}
+  .hero-banner{max-width:880px;border-radius:22px;border:1px solid rgba(212,175,55,.28);box-shadow:0 30px 80px rgba(0,0,0,.6)}
+}
 .hero-pattern{position:absolute;inset:0;opacity:0.05;background-image:radial-gradient(circle at 1px 1px,#d4af37 1px,transparent 0);background-size:24px 24px}
 .hero-photo-hint{position:absolute;top:12px;left:0;right:0;text-align:center;color:rgba(212,175,55,0.4);font-size:10px;letter-spacing:0.04em;z-index:2}
 .hero-content{position:relative;z-index:3;padding:0 24px 36px}
@@ -114,25 +132,64 @@ tr:last-child td{border-bottom:none}
 .hero-title{font-family:Georgia,'Times New Roman',serif;font-size:48px;line-height:0.95;font-weight:700;color:#fff;letter-spacing:0.005em;margin-bottom:8px;text-transform:uppercase}
 .hero-title .accent{display:block;font-size:21px;letter-spacing:0.2em;color:#d4af37;margin-top:8px;font-weight:600}
 .hero-tagline{color:#e8c766;font-size:12px;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:24px}
-.hero-cta{display:inline-flex;align-items:center;gap:8px;background:#c0392b;color:#fff;font-size:15px;font-weight:700;padding:14px 30px;border:none;border-radius:100px;cursor:pointer;transition:transform .15s}
+.hero-cta{display:inline-flex;align-items:center;gap:8px;background:var(--crimson);color:#fff;font-family:var(--head);font-size:15px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:15px 34px;border:none;border-radius:6px;cursor:pointer;transition:transform .15s,background .15s}
+.hero-cta:hover{background:var(--crimson-l)}
 .hero-cta:active{transform:scale(0.97)}
 .values-row{display:flex;justify-content:space-between;gap:4px;padding:20px 18px;background:#0a1428;border-bottom:1px solid rgba(212,175,55,0.12)}
 .value{flex:1;text-align:center}
 .value-icon{font-size:18px;margin-bottom:4px}
 .value-lbl{font-size:8px;color:#e8c766;letter-spacing:0.05em;text-transform:uppercase;font-weight:600}
-.features{padding:24px 18px 10px;background:#060d1c}
-.features-hd{color:#fff;font-family:Georgia,serif;font-size:24px;font-weight:700;margin-bottom:4px}
-.features-sub{color:#9fb0c9;font-size:13px;margin-bottom:20px}
+.features{padding:32px 20px 12px;background:#060d1c;max-width:1000px;margin:0 auto;width:100%}
+.features-hd{color:#fff;font-family:var(--display);font-size:34px;font-weight:400;line-height:.95;margin-bottom:6px;text-transform:uppercase;letter-spacing:.01em;position:relative;padding-left:16px}
+.features-hd::before{content:"";position:absolute;left:0;top:3px;bottom:3px;width:5px;background:var(--crimson)}
+.features-sub{color:#9fb0c9;font-size:13px;margin-bottom:22px;text-transform:uppercase;letter-spacing:.14em;font-weight:600}
 .feature-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.feature-card{position:relative;background:#13243f;border:1px solid rgba(212,175,55,0.2);border-radius:16px;padding:20px 16px;cursor:pointer;text-align:left;overflow:hidden;transition:transform .15s,border-color .15s}
-.feature-card:active{transform:scale(0.97)}
-.feature-card:hover{border-color:rgba(212,175,55,0.55)}
+@media(min-width:680px){
+  .features{padding:52px 24px 16px}
+  .features-hd{font-size:46px}
+  .feature-grid{gap:16px}
+}
+.feature-card{position:relative;background:#13243f;border:1px solid rgba(212,175,55,0.2);border-radius:12px;padding:22px 18px 20px;cursor:pointer;text-align:left;overflow:hidden;transition:transform .18s,border-color .18s,box-shadow .18s}
+.feature-card::after{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--crimson);transform:scaleY(0);transform-origin:top;transition:transform .2s}
+.feature-card:active{transform:scale(0.98)}
+.feature-card:hover{border-color:rgba(212,175,55,0.55);transform:translateY(-4px);box-shadow:0 14px 34px rgba(0,0,0,.5)}
+.feature-card:hover::after{transform:scaleY(1)}
 .feature-icon{font-size:28px;margin-bottom:12px}
-.feature-name{color:#fff;font-size:17px;font-weight:600;margin-bottom:3px}
-.feature-desc{color:#9fb0c9;font-size:12px;line-height:1.4}
-.feature-arrow{position:absolute;top:18px;right:16px;color:#d4af37;font-size:16px;opacity:0.7}
+.feature-name{color:#fff;font-family:var(--head);font-size:20px;font-weight:700;margin-bottom:4px;text-transform:uppercase;letter-spacing:.03em;line-height:1}
+.feature-desc{color:#9fb0c9;font-size:12px;line-height:1.45}
+.feature-arrow{position:absolute;top:18px;right:16px;color:#d4af37;font-size:16px;opacity:0.7;transition:transform .18s}
+.feature-card:hover .feature-arrow{transform:translateX(3px)}
 .feature-card.wide{grid-column:1 / -1}
 .welcome-foot{text-align:center;color:#5a6b85;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;padding:30px 24px;background:#060d1c}
+/* ---- App shell: left sidebar + main content (pro club layout) ---- */
+.shell{min-height:100vh}
+.sidebar{position:fixed;top:0;left:0;bottom:0;width:252px;z-index:60;display:flex;flex-direction:column;padding:16px 12px;background:linear-gradient(180deg,#0b1730,#070e1f);border-right:1px solid var(--line);overflow-y:auto;transform:translateX(-100%);transition:transform .25s ease}
+.sidebar.open{transform:none}
+.sb-scrim{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:55;display:none}
+.sb-scrim.show{display:block}
+.sb-brand{display:flex;align-items:center;gap:11px;padding:6px 8px 16px;margin-bottom:12px;cursor:pointer;border-bottom:1px solid var(--line)}
+.sb-brand-txt{display:flex;flex-direction:column;line-height:1.1}
+.sb-brand-name{font-family:var(--head);font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#fff;font-size:18px}
+.sb-brand-sub{font-size:10px;color:var(--gold-l);text-transform:uppercase;letter-spacing:.16em;margin-top:2px}
+.sidebar .nav{display:flex;flex-direction:column;gap:5px;margin:0}
+.sidebar .nav-btn{display:flex;align-items:center;gap:13px;text-align:left;padding:12px 14px;border-radius:8px;border:1px solid transparent;background:transparent;color:var(--muted);font-size:14px;letter-spacing:.04em}
+.sidebar .nav-btn i{margin:0;font-size:18px;width:22px;text-align:center}
+.sidebar .nav-btn:hover{background:rgba(255,255,255,.04);color:#fff}
+.sidebar .nav-btn.on{background:linear-gradient(135deg,var(--gold),#b8902b);color:#1a1205;border-color:var(--gold)}
+.sb-foot{margin-top:auto;padding-top:14px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:8px}
+.sb-foot .home-btn,.sb-foot .logout{margin:0;width:100%;text-align:center}
+.main{min-height:100vh}
+.main-top{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:12px;padding:11px 16px;background:rgba(7,14,31,.94);backdrop-filter:blur(10px);border-bottom:3px solid var(--crimson)}
+.sb-toggle{background:none;border:1px solid var(--line2);color:var(--gold-l);font-size:18px;padding:5px 12px;border-radius:8px;cursor:pointer;line-height:1}
+.main-top-brand{display:flex;align-items:center;gap:8px;font-family:var(--head);font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#fff;font-size:16px}
+.main-inner{max-width:1120px;margin:0 auto;padding:18px 16px 44px}
+@media(min-width:900px){
+  .sidebar{transform:none;box-shadow:none}
+  .sb-scrim{display:none!important}
+  .main-top{display:none}
+  .main{margin-left:252px}
+  .main-inner{padding:34px 44px 52px}
+}
 @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 .hero-content>*{animation:fadeUp .6s ease backwards}
 .hero-content>*:nth-child(1){animation-delay:.05s}
@@ -224,6 +281,50 @@ tr:last-child td{border-bottom:none}
 .social-edit-box input:focus{outline:none;border-color:#d4af37}
 .social-edit-note{color:#5a6b85;font-size:11px;margin-top:10px;line-height:1.4}
 .est-line{text-align:center;color:#5a6b85;font-size:11px;letter-spacing:.14em;text-transform:uppercase;margin-top:10px}
+/* ---- Man Utd–style landing: cinematic hero + card rail ---- */
+.sponsor-bar{display:flex;align-items:center;justify-content:center;gap:12px;padding:8px 16px;background:#000;border-bottom:1px solid rgba(255,255,255,.08);text-decoration:none;cursor:pointer}
+.sponsor-label{font-family:var(--head);font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:#7f8ba0}
+.sponsor-name{font-family:var(--display);font-size:16px;letter-spacing:.04em;color:#fff;line-height:1}
+.sponsor-cta{font-family:var(--head);font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-l)}
+.sponsor-bar:hover .sponsor-cta{color:#fff}
+.sponsor-bar:hover .sponsor-name{color:var(--gold-l)}
+.cnav-menu{display:none;gap:24px;margin-left:28px}
+.cnav-menu a{font-family:var(--head);font-weight:600;text-transform:uppercase;letter-spacing:.05em;font-size:13px;color:#cdd6e4;cursor:pointer}
+.cnav-menu a:hover{color:#fff}
+@media(min-width:760px){.cnav-menu{display:flex}}
+.mu-hero{position:relative;min-height:66vh;display:flex;align-items:flex-end;overflow:hidden;background:#060d1c}
+.mu-hero-bg{position:absolute;inset:0;background:url(club-banner.png) center 42%/cover no-repeat;z-index:0}
+.mu-hero-shade{position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(6,13,28,.94) 0%,rgba(6,13,28,.72) 38%,rgba(6,13,28,.2) 72%,rgba(6,13,28,.05) 100%),linear-gradient(0deg,rgba(6,13,28,.96),transparent 55%)}
+.mu-hero-body{position:relative;z-index:2;width:100%;max-width:1120px;margin:0 auto;padding:36px 22px 42px;animation:fadeUp .6s ease backwards}
+.mu-kicker{display:inline-block;background:var(--crimson);color:#fff;font-family:var(--head);font-weight:700;text-transform:uppercase;letter-spacing:.1em;font-size:11px;padding:6px 12px;border-radius:4px;margin-bottom:16px}
+.mu-hero-title{font-family:var(--display);font-weight:400;font-size:clamp(46px,9vw,94px);line-height:.88;text-transform:uppercase;color:#fff;margin-bottom:16px;text-shadow:0 4px 34px rgba(0,0,0,.55)}
+.mu-hero-sub{color:#e6edf7;font-size:15px;max-width:460px;line-height:1.55;margin-bottom:24px;text-shadow:0 2px 12px rgba(0,0,0,.6)}
+.mu-hero-actions{display:flex;gap:12px;flex-wrap:wrap}
+.hero-cta.ghost{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.45)}
+.hero-cta.ghost:hover{background:rgba(255,255,255,.2)}
+.mu-rail{max-width:1120px;margin:0 auto;padding:30px 0 6px;background:#060d1c}
+.mu-rail-hd{font-family:var(--display);font-weight:400;font-size:26px;text-transform:uppercase;color:#fff;padding:0 22px;margin-bottom:16px}
+.mu-rail-hd span{border-left:5px solid var(--crimson);padding-left:14px;display:inline-block}
+.mu-cards{display:flex;gap:14px;overflow-x:auto;padding:4px 22px 22px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+.mu-cards::-webkit-scrollbar{height:6px}
+.mu-cards::-webkit-scrollbar-thumb{background:var(--line2);border-radius:10px}
+.mu-card{flex:0 0 240px;scroll-snap-align:start;background:#13243f;border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:pointer;transition:transform .18s,border-color .18s,box-shadow .18s}
+.mu-card:hover{transform:translateY(-5px);border-color:var(--line2);box-shadow:0 16px 38px rgba(0,0,0,.5)}
+.mu-card-thumb{position:relative;height:118px;display:flex;align-items:center;justify-content:center;font-size:46px;background:linear-gradient(135deg,#16294a,#0b1830)}
+.mu-card.live .mu-card-thumb{background:linear-gradient(135deg,#3a1220,#241226)}
+.mu-live-dot{position:absolute;top:10px;right:10px;background:var(--crimson);color:#fff;font-family:var(--head);font-size:10px;font-weight:700;letter-spacing:.08em;padding:3px 8px;border-radius:4px}
+.mu-card-body{padding:14px 15px 18px}
+.mu-card-kicker{font-family:var(--head);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:var(--gold-l)}
+.mu-card-title{font-family:var(--head);font-size:19px;font-weight:700;text-transform:uppercase;color:#fff;margin:3px 0 5px;line-height:1}
+.mu-card-desc{font-size:12px;color:var(--muted);line-height:1.4}
+.mu-footwrap{max-width:1120px;margin:0 auto;padding:22px 22px 34px;text-align:center;background:#060d1c}
+@media(min-width:900px){
+  .mu-hero{min-height:80vh}
+  .mu-hero-body{padding:0 44px 66px}
+  .mu-rail{padding-top:42px}
+  .mu-rail-hd{font-size:34px;padding:0 44px}
+  .mu-cards{padding:4px 44px 26px}
+}
 </style>
 </head>
 <body>
@@ -250,13 +351,73 @@ tr:last-child td{border-bottom:none}
 </div>
 
 <div id="welcome">
+  <a class="sponsor-bar" id="sponsor-bar" href="https://queex.com/" target="_blank" rel="noopener noreferrer">
+    <span class="sponsor-label">Official Partner</span>
+    <span class="sponsor-name">GALAMART</span>
+    <span class="sponsor-cta">Visit store →</span>
+  </a>
   <div class="cnav">
     <div class="cnav-crest">🏔️</div>
+    <div class="cnav-name">Nepcali FC</div>
+    <nav class="cnav-menu">
+      <a onclick="enterApp('tournament')">Cup</a>
+      <a onclick="enterApp('matchday')">Live</a>
+      <a onclick="enterApp('rsvp')">RSVP</a>
+      <a onclick="enterApp('dashboard')">Dashboard</a>
+      <a onclick="enterApp('roster')">Roster</a>
+    </nav>
     <button class="cnav-login" onclick="enterApp('tournament')">Enter →</button>
   </div>
-  <div class="hero">
-    <img class="hero-banner" src="club-banner.png" alt="Nepcali Football Club — Pride, Roots, Heritage">
-    <button class="hero-cta" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">Explore the club →</button>
+
+  <section class="mu-hero">
+    <div class="mu-hero-bg"></div>
+    <div class="mu-hero-shade"></div>
+    <div class="mu-hero-body">
+      <span class="mu-kicker">Nepcali Football Club · Est. 2015</span>
+      <h1 class="mu-hero-title">Pride.<br>Roots.<br>Heritage.</h1>
+      <p class="mu-hero-sub">The home of our Nepali football family — live scores, the squad, matchday graphics, attendance and more.</p>
+      <div class="mu-hero-actions">
+        <button class="hero-cta" onclick="enterApp('tournament')">Enter the club →</button>
+        <button class="hero-cta ghost" onclick="enterMatchday()">📢 Matchday Live</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="mu-rail">
+    <div class="mu-rail-hd"><span>Explore the club</span></div>
+    <div class="mu-cards">
+      <div class="mu-card live" onclick="enterMatchday()">
+        <div class="mu-card-thumb">📢<span class="mu-live-dot">LIVE</span></div>
+        <div class="mu-card-body"><span class="mu-card-kicker">Matchday</span><div class="mu-card-title">Matchday Live</div><div class="mu-card-desc">Live scoreboard & shareable graphics</div></div>
+      </div>
+      <div class="mu-card" onclick="enterApp('tournament')">
+        <div class="mu-card-thumb">🏆</div>
+        <div class="mu-card-body"><span class="mu-card-kicker">Competition</span><div class="mu-card-title">Tournament Cup</div><div class="mu-card-desc">Scores, table, knockouts & top scorers</div></div>
+      </div>
+      <div class="mu-card" onclick="enterApp('rsvp')">
+        <div class="mu-card-thumb">🗳️</div>
+        <div class="mu-card-body"><span class="mu-card-kicker">Attendance</span><div class="mu-card-title">RSVP</div><div class="mu-card-desc">Who's in — with guests counted</div></div>
+      </div>
+      <div class="mu-card" onclick="enterApp('dashboard')">
+        <div class="mu-card-thumb">📊</div>
+        <div class="mu-card-body"><span class="mu-card-kicker">Overview</span><div class="mu-card-title">Dashboard</div><div class="mu-card-desc">Fixtures, events & club overview</div></div>
+      </div>
+      <div class="mu-card" onclick="enterApp('lineup')">
+        <div class="mu-card-thumb">⚽</div>
+        <div class="mu-card-body"><span class="mu-card-kicker">Tactics</span><div class="mu-card-title">Starting XI</div><div class="mu-card-desc">Pick the formation & lineup</div></div>
+      </div>
+      <div class="mu-card" onclick="enterApp('roster')">
+        <div class="mu-card-thumb">👥</div>
+        <div class="mu-card-body"><span class="mu-card-kicker">Squad</span><div class="mu-card-title">Roster</div><div class="mu-card-desc">Players & squads</div></div>
+      </div>
+      <div class="mu-card" onclick="enterApp('money')">
+        <div class="mu-card-thumb">💰</div>
+        <div class="mu-card-body"><span class="mu-card-kicker">Finance</span><div class="mu-card-title">Money</div><div class="mu-card-desc">Fees, balances & expenses</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="mu-footwrap">
     <div class="socials" id="welcome-socials" style="display:none"></div>
     <div class="social-edit-wrap" id="social-edit-wrap" style="display:none">
       <button class="social-edit-toggle" onclick="toggleSocialEdit()">🔗 Add / edit social links</button>
@@ -266,71 +427,37 @@ tr:last-child td{border-bottom:none}
       </div>
     </div>
     <div class="est-line">Est. 2015</div>
-  </div>
-  <div class="features" id="features">
-    <div class="features-hd">Explore Nepcali FC</div>
-    <div class="features-sub">Everything the club does, in one place</div>
-    <div class="feature-grid">
-      <div class="feature-card wide" onclick="enterMatchday()" style="border-color:rgba(224,73,47,.55);background:linear-gradient(135deg,#1a1830,#241226)">
-        <div class="feature-arrow">→</div>
-        <div class="feature-icon">📢</div>
-        <div class="feature-name">Matchday Live <span style="font-size:11px;background:var(--crimson);color:#fff;padding:2px 8px;border-radius:100px;vertical-align:middle;margin-left:6px;letter-spacing:.05em">LIVE</span></div>
-        <div class="feature-desc">Live scoreboard with goal events — download & share the graphic to social media</div>
-      </div>
-      <div class="feature-card wide" onclick="enterApp('tournament')">
-        <div class="feature-arrow">→</div>
-        <div class="feature-icon">🏆</div>
-        <div class="feature-name">Tournament Cup</div>
-        <div class="feature-desc">Live scores, league table, knockouts and top scorers</div>
-      </div>
-      <div class="feature-card" onclick="enterApp('roster')">
-        <div class="feature-arrow">→</div>
-        <div class="feature-icon">👥</div>
-        <div class="feature-name">Roster</div>
-        <div class="feature-desc">Players & squads</div>
-      </div>
-      <div class="feature-card" onclick="enterApp('money')">
-        <div class="feature-arrow">→</div>
-        <div class="feature-icon">💰</div>
-        <div class="feature-name">Money</div>
-        <div class="feature-desc">Fees & balances</div>
-      </div>
-      <div class="feature-card wide" onclick="enterApp('dashboard')">
-        <div class="feature-arrow">→</div>
-        <div class="feature-icon">📊</div>
-        <div class="feature-name">Dashboard</div>
-        <div class="feature-desc">Upcoming tournament, events & club overview</div>
-      </div>
-      <div class="feature-card wide" onclick="enterApp('lineup')">
-        <div class="feature-arrow">→</div>
-        <div class="feature-icon">⚽</div>
-        <div class="feature-name">Starting XI</div>
-        <div class="feature-desc">Pick the formation and your starting eleven on the pitch</div>
-      </div>
-    </div>
-  </div>
+  </section>
   <div class="welcome-foot">Play hard · Have fun · Respect all</div>
 </div>
 
-<div class="wrap" id="app" style="display:none">
-  <header>
-    <div onclick="goHome()" style="display:flex;align-items:center;gap:11px;cursor:pointer" title="Back to home">
-      <div style="font-size:22px">⚽</div>
-      <h1>NEP Cali Manager</h1>
+<div id="app" class="shell" style="display:none">
+  <div class="sb-scrim" id="sb-scrim" onclick="closeSidebar()"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-brand" onclick="goHome()" title="Back to home">
+      <div class="cnav-crest">🏔️</div>
+      <div class="sb-brand-txt"><span class="sb-brand-name">Nepcali FC</span><span class="sb-brand-sub">Football Club</span></div>
     </div>
-    <button class="home-btn" onclick="goHome()" title="Back to home">⌂ Home</button>
-    <button class="logout" id="auth-btn" onclick="authBtnClick()">Sign in</button>
-  </header>
-
-  <div class="nav" style="grid-template-columns:repeat(7,1fr)">
-    <button class="nav-btn on" onclick="show('tournament',this)"><i>🏆</i>Cup</button>
-    <button class="nav-btn" onclick="show('matchday',this)"><i>📢</i>Live</button>
-    <button class="nav-btn" onclick="show('rsvp',this)"><i>🗳️</i>RSVP</button>
-    <button class="nav-btn" onclick="show('dashboard',this)"><i>📊</i>Dash</button>
-    <button class="nav-btn" onclick="show('lineup',this)"><i>⚽</i>XI</button>
-    <button class="nav-btn" onclick="show('roster',this)"><i>👥</i>Roster</button>
-    <button class="nav-btn" onclick="gatedShow('money',this)"><i>💰</i>Money</button>
-  </div>
+    <nav class="nav sb-nav">
+      <button class="nav-btn on" onclick="show('tournament',this)"><i>🏆</i>Cup</button>
+      <button class="nav-btn" onclick="show('matchday',this)"><i>📢</i>Live</button>
+      <button class="nav-btn" onclick="show('rsvp',this)"><i>🗳️</i>RSVP</button>
+      <button class="nav-btn" onclick="show('dashboard',this)"><i>📊</i>Dashboard</button>
+      <button class="nav-btn" onclick="show('lineup',this)"><i>⚽</i>Starting XI</button>
+      <button class="nav-btn" onclick="show('roster',this)"><i>👥</i>Roster</button>
+      <button class="nav-btn" onclick="gatedShow('money',this)"><i>💰</i>Money</button>
+    </nav>
+    <div class="sb-foot">
+      <button class="home-btn" onclick="goHome()">⌂ Home</button>
+      <button class="logout" id="auth-btn" onclick="authBtnClick()">Sign in</button>
+    </div>
+  </aside>
+  <main class="main">
+    <div class="main-top">
+      <button class="sb-toggle" onclick="toggleSidebar()" aria-label="Menu">☰</button>
+      <div class="main-top-brand"><span class="cnav-crest" style="width:26px;height:26px;font-size:13px;border-width:1px">🏔️</span> Nepcali FC</div>
+    </div>
+    <div class="main-inner">
 
   <div id="rsvp" class="sec">
     <div class="card">
@@ -556,6 +683,9 @@ tr:last-child td{border-bottom:none}
       <div id="t-history-list"><div class="empty">Loading…</div></div>
     </div>
   </div>
+
+    </div><!-- /main-inner -->
+  </main>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -1756,6 +1886,8 @@ async function deleteHistory(id){
   renderHistory();
 }
 
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sb-scrim').classList.toggle('show');}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sb-scrim').classList.remove('show');}
 function show(id,btn){
   document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('on'));
@@ -1763,6 +1895,9 @@ function show(id,btn){
   if(id!=='tournament')mdStopPolling();
   if(id==='matchday')renderCustomMatch();
   if(id==='rsvp')loadPolls();
+  if(window.innerWidth<900)closeSidebar();
+  const mi=document.querySelector('.main-inner');if(mi)mi.scrollTop=0;
+  window.scrollTo(0,0);
 }
 
 // ---- Site usage (unique visitors by salted IP hash) ----
