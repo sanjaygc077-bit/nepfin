@@ -1323,7 +1323,8 @@ function renderSnaps(){
 
 // ---- Club Preview — dreamy landing-page slideshow of recent snaps ----------
 let previewIndex=0,previewTimer=null;
-function previewList(){return snaps.slice(0,12);}   // most-recent snaps
+function shuffled(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function previewList(){return shuffled(snaps).slice(0,12);}   // random order each load
 // ---- Hero background slideshow (banner first, then hand-picked Snaps) ------
 // Only photos the user explicitly features appear behind the home headline.
 let heroIndex=0,heroTimer=null;
@@ -1343,7 +1344,7 @@ function toggleHeroSnap(id){
 }
 function heroImages(){
   const imgs=['club-banner.png'];                       // existing banner always first
-  heroSnapIds().forEach(id=>{
+  shuffled(heroSnapIds()).forEach(id=>{                 // featured photos in random order
     const s=snaps.find(x=>x&&x.id===id&&x.type!=='video'&&x.url);
     if(s)imgs.push(s.url);
   });
