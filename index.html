@@ -2337,6 +2337,7 @@ async function deleteHistory(id){
 
 function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sb-scrim').classList.toggle('show');}
 function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sb-scrim').classList.remove('show');}
+function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('sb-scrim').classList.add('show');}
 function show(id,btn){
   document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('on'));
@@ -2406,6 +2407,9 @@ function enterApp(tabId){
     const btn=document.querySelectorAll('.nav-btn')[map[tabId]];
     if(btn)btn.click();
   }
+  // On phones, reveal the left nav/branding drawer on entry instead of dropping
+  // straight into the tab content (btn.click above closes it, so open it after).
+  if(window.innerWidth<900)openSidebar();
 }
 
 function enterMatchday(){enterApp('matchday');}
