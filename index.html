@@ -300,7 +300,11 @@ tr:last-child td{border-bottom:none}
 .cnav-menu a:hover{color:#fff}
 @media(min-width:760px){.cnav-menu{display:flex}}
 .mu-hero{position:relative;min-height:66vh;display:flex;align-items:flex-end;overflow:hidden;background:#060d1c}
-.mu-hero-bg{position:absolute;inset:0;background:url(club-banner.png) center 42%/cover no-repeat;z-index:0}
+.mu-hero-bg{position:absolute;inset:0;background:url(club-banner.png) center 42%/cover no-repeat;z-index:0;overflow:hidden}
+/* Cinematic hero slideshow layers (banner first, then Snaps). */
+.hero-slide{position:absolute;inset:0;background-size:cover;background-position:center 42%;background-repeat:no-repeat;opacity:0;transition:opacity 1.6s ease;will-change:opacity,transform}
+.hero-slide.on{opacity:1;animation:heroKen 13s ease-out forwards}
+@keyframes heroKen{from{transform:scale(1.03)}to{transform:scale(1.15)}}
 .mu-hero-shade{position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(6,13,28,.94) 0%,rgba(6,13,28,.72) 38%,rgba(6,13,28,.2) 72%,rgba(6,13,28,.05) 100%),linear-gradient(0deg,rgba(6,13,28,.96),transparent 55%)}
 .mu-hero-body{position:relative;z-index:2;width:100%;max-width:1120px;margin:0 auto;padding:36px 22px 42px;animation:fadeUp .6s ease backwards}
 .mu-kicker{display:inline-block;background:var(--crimson);color:#fff;font-family:var(--head);font-weight:700;text-transform:uppercase;letter-spacing:.1em;font-size:11px;padding:6px 12px;border-radius:4px;margin-bottom:16px}
@@ -473,7 +477,7 @@ tr:last-child td{border-bottom:none}
   </div>
 
   <section class="mu-hero">
-    <div class="mu-hero-bg"></div>
+    <div class="mu-hero-bg" id="mu-hero-bg"></div>
     <div class="mu-hero-shade"></div>
     <div class="mu-hero-body">
       <span class="mu-kicker">Nepcali Football Club · Est. 2015</span>
@@ -2033,9 +2037,32 @@ function renderSnaps(){
 // ---- Club Preview — dreamy landing-page slideshow of recent snaps ----------
 let previewIndex=0,previewTimer=null;
 function previewList(){return snaps.slice(0,12);}   // most-recent snaps
+// ---- Hero background slideshow (banner first, then Snaps photos) -----------
+let heroIndex=0,heroTimer=null;
+function heroImages(){
+  const imgs=['club-banner.png'];                       // existing banner always first
+  snaps.filter(s=>s&&s.type!=='video'&&s.url).slice(0,10).forEach(s=>imgs.push(s.url));
+  return imgs;
+}
+function renderHeroBg(){
+  const bg=document.getElementById('mu-hero-bg');if(!bg)return;
+  const imgs=heroImages();
+  bg.innerHTML=imgs.map((u,i)=>`<div class="hero-slide${i===0?' on':''}" style="background-image:url(&quot;${String(u).replace(/"/g,'%22')}&quot;)"></div>`).join('');
+  heroIndex=0;stopHero();
+  if(imgs.length>1)startHero();
+}
+function startHero(){stopHero();const n=heroImages().length;if(n>1)heroTimer=setInterval(()=>heroGo((heroIndex+1)%n),6000);}
+function stopHero(){if(heroTimer){clearInterval(heroTimer);heroTimer=null;}}
+function heroGo(i){
+  const bg=document.getElementById('mu-hero-bg');if(!bg)return;
+  const slides=bg.querySelectorAll('.hero-slide');if(!slides.length)return;
+  heroIndex=i;slides.forEach((sl,idx)=>sl.classList.toggle('on',idx===i));
+}
+
 function renderPreview(){
   const stage=document.getElementById('preview-stage');
   const wrap=document.getElementById('mu-preview-wrap');
+  renderHeroBg();
   if(!stage)return;
   const list=previewList();
   if(!list.length){if(wrap)wrap.style.display='none';stopPreview();stage.innerHTML='';return;}
